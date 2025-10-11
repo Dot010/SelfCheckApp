@@ -1,9 +1,11 @@
-import { Button } from "@/components/ui/button";
+
+
+
 import { db } from "@/lib/prisma";
-import { ChevronLeftIcon, ScrollTextIcon } from "lucide-react";
-import Image from "next/image";
+// import Image from "next/image";
 import { notFound } from "next/navigation";
 import RestaurantHeader from "./components/header";
+import RestaurantCategories from "../components/categories";
 
 interface RestaurantMenuPageProps {
     params: Promise<{ slug: string }>;
@@ -11,7 +13,7 @@ interface RestaurantMenuPageProps {
 }
 
 const isConsumptionMethodValid = (consumptionMethod: string) => {
-    return ["DINE_IN", "TAKEWAY"].includes(consumptionMethod.toUpperCase());
+    return ["DINE_IN", "TAKEAWAY"].includes(consumptionMethod.toUpperCase());
     
 }
 
@@ -41,7 +43,7 @@ const RestaurantMenuPage = async ({ params, searchParams, }: RestaurantMenuPageP
     return (
         <div>
             <RestaurantHeader restaurant={restaurant} />
-      
+            <RestaurantCategories restaurant={restaurant} />
             
         </div>
 
