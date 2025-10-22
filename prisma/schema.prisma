@@ -16,7 +16,7 @@ datasource db {
 model Restaurant {
   id             String         @id @default(uuid())
   name           String
-  slug           String @unique
+  slug           String         @unique
   description    String
   avatarImageUrl String
   coverImageUrl  String
@@ -43,7 +43,7 @@ model Product {
   description    String
   price          Float
   imageUrl       String
-  ingredients     String[]
+  ingredients    String[]
   orderProducts  OrderProduct[]
   restaurant     Restaurant     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId   String
@@ -62,6 +62,8 @@ model Order {
   restaurant        Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId      String
   orderProducts     OrderProduct[]
+  customerName      String
+  customerCpf       String
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 }
@@ -71,7 +73,7 @@ model OrderProduct {
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId   Int
+  orderId   Int 
   quantity  Int
   price     Float
   createdAt DateTime @default(now())
