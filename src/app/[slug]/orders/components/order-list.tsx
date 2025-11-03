@@ -38,10 +38,10 @@ const getStatusLabel = (status: OrderStatus) => {
     return ``;
 }
 
-const OrderList = ({orders}: OrderListProps) => {
- const router = useRouter();
-  const handleBackClick = () => router.back();
-  return (
+const OrderList = ({ orders }: OrderListProps) => {
+    const router = useRouter();
+    const handleBackClick = () => router.back();
+    return (
         <div className="space-y-6 p-6">
             <Button
                 size="icon"
