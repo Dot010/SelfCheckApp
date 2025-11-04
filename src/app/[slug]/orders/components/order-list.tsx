@@ -35,6 +35,8 @@ const getStatusLabel = (status: OrderStatus) => {
     if (status === `FINISHED`) return `Concluído`;
     if (status === `iN_PREPARATION`) return `Em Preparo`;
     if (status === `PENDING`) return `Pendente`;
+    if (status === `PAYMENT_CONFIRMED`) return `Pagamento Confirmado`;
+    if(status === 'PAYMENT_FAILED') return 'Pagamento Falhou';
     return ``;
 }
 
@@ -69,12 +71,10 @@ const OrderList = ({ orders }: OrderListProps) => {
                     className="p-4">
                     <CardContent className="space-y-4 p-5">
                         <div
-                            className={
-                            `text-white w-fit rounded-full py-1 px-2 text-xs font-semibold  
-                                ${order.status === OrderStatus.FINISHED ?
-                                    "bg-green-500" :
-                                    "bg-gray-300 text-gray-500"}`
-                                
+                            className={`w-fit rounded-full px-2 py-1 text-xs font-semibold text-white 
+                          ${order.status === OrderStatus.FINISHED ?
+                                    "bg-green-500 text-white" :
+                                    "bg-gray-200 text-gray-500"} `
                             }>
                             
                             
