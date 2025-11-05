@@ -49,6 +49,7 @@ Jonathan Carvalho — Desenvolvimento Full Stack
 - Feedback visual em todas as ações do usuário  
 
 ## Estrutura do Projeto
+```text
 src/
 ├── app/
 │ ├── [slug]/ # Área do restaurante
@@ -62,6 +63,7 @@ src/
 │ └── globals.css # Estilos globais
 └── utils/
 └── helpers.ts # Funções auxiliares
+```
 
 
 ## Integração com Stripe
