@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SelfCheckApp
 
-## Getting Started
+Sistema de autoatendimento para restaurantes, desenvolvido com Next.js, TypeScript, Tailwind CSS, Prisma e Stripe.
 
-First, run the development server:
+## Sobre o Projeto
 
+O SelfCheckApp foi desenvolvido para oferecer uma experiência moderna, prática e eficiente no processo de pedidos em restaurantes.  
+A aplicação permite que o cliente visualize o cardápio, selecione produtos, finalize o pedido e realize o pagamento online, sem necessidade de atendimento presencial.
+
+Além disso, o restaurante pode gerenciar seus pedidos em tempo real, atualizar produtos e monitorar o status das vendas, tudo em um único sistema.
+
+Acesse a aplicação:  
+https://self-check-app.vercel.app/fsw-donalds
+
+## Desenvolvedor
+
+Jonathan Carvalho — Desenvolvimento Full Stack
+
+## Tecnologias Utilizadas
+
+- Next.js 14 — Framework React para aplicações full stack  
+- TypeScript — Superset do JavaScript com tipagem estática  
+- Tailwind CSS — Framework CSS utilitário  
+- Prisma ORM — Manipulação de banco de dados  
+- PostgreSQL — Banco de dados relacional  
+- Stripe — Processamento de pagamentos online  
+- Vercel — Hospedagem e deploy contínuo  
+
+## Funcionalidades
+
+### Pedidos
+- Criação e visualização de pedidos em tempo real  
+- Atualização automática de status após confirmação de pagamento  
+- Interface intuitiva e responsiva para o cliente  
+
+### Pagamentos
+- Integração com Stripe Checkout  
+- Processamento seguro de pagamentos  
+- Atualização de pedidos via webhook Stripe  
+
+### Restaurante
+- Gerenciamento de produtos e cardápio  
+- Controle e acompanhamento dos pedidos  
+- Revalidação automática de páginas  
+
+### Interface
+- Design limpo e responsivo  
+- Componentes reutilizáveis  
+- Feedback visual em todas as ações do usuário  
+
+## Estrutura do Projeto
+src/
+├── app/
+│ ├── [slug]/ # Área do restaurante
+│ │ ├── menu/ # Exibição do cardápio e produtos
+│ │ ├── orders/ # Pedidos e status
+│ │ └── api/ # Integração com Stripe e banco
+│ └── components/ # Componentes reutilizáveis
+├── lib/
+│ └── prisma.ts # Configuração do Prisma ORM
+├── styles/
+│ └── globals.css # Estilos globais
+└── utils/
+└── helpers.ts # Funções auxiliares
+
+
+## Integração com Stripe
+
+O sistema se comunica diretamente com a API do Stripe para processamento de pagamentos.  
+O webhook recebe os seguintes eventos principais:
+
+- `checkout.session.completed` → Atualiza o pedido para *Pagamento Confirmado*  
+- `charge.failed` → Atualiza o pedido para *Pagamento Falhou*  
+
+## Execução Local
+
+1. Clone o repositório  
 ```bash
+git clone https://github.com/Dot010/SelfCheckApp.git
+cd SelfCheckApp
+Instale as dependências
+
+npm install
+
+
+Configure o arquivo .env
+
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/selfcheckapp"
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_WEBHOOK_SECRET_KEY="whsec_..."
+NEXT_PUBLIC_STRIPE_PUBLIC_KEY="pk_test_..."
+
+
+Execute as migrações do Prisma
+
+npx prisma migrate dev
+
+
+Inicie o servidor
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Acesse em: http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Teste de Webhook
 
-## Learn More
+Para testar localmente os eventos de pagamento:
 
-To learn more about Next.js, take a look at the following resources:
+stripe listen --forward-to localhost:3000/api/webhooks/stripe
+stripe trigger checkout.session.completed
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Objetivo Técnico
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+O projeto aplica conceitos de componentização, tipagem estática, rotas dinâmicas e integração com APIs REST, utilizando boas práticas de clean code, UI/UX e responsividade, com foco na experiência do usuário e eficiência operacional para restaurantes.
 
-## Deploy on Vercel
+Contribuição
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+O projeto foi desenvolvido como parte de um estudo prático em desenvolvimento web e integração com sistemas de pagamento.
+Para sugestões ou melhorias, entre em contato com o desenvolvedor.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Suporte
+
+Para dúvidas ou suporte técnico, entre em contato com:
+
+Jonathan Carvalho
+GitHub
+
