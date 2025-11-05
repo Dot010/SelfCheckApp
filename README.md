@@ -47,21 +47,21 @@ Jonathan Carvalho — Desenvolvimento Full Stack
 - Design limpo e responsivo  
 - Componentes reutilizáveis  
 - Feedback visual em todas as ações do usuário  
-
 ## Estrutura do Projeto
 src/
 ├── app/
-│ ├── [slug]/ # Área do restaurante
-│ │ ├── menu/ # Exibição do cardápio e produtos
-│ │ ├── orders/ # Pedidos e status
-│ │ └── api/ # Integração com Stripe e banco
-│ └── components/ # Componentes reutilizáveis
+│   ├── [slug]/        # Área do restaurante
+│   │   ├── menu/      # Exibição do cardápio e produtos
+│   │   ├── orders/    # Pedidos e status
+│   │   └── api/       # Integração com Stripe e banco
+│   └── components/    # Componentes reutilizáveis
 ├── lib/
-│ └── prisma.ts # Configuração do Prisma ORM
+│   └── prisma.ts      # Configuração do Prisma ORM
 ├── styles/
-│ └── globals.css # Estilos globais
+│   └── globals.css    # Estilos globais
 └── utils/
-└── helpers.ts # Funções auxiliares
+    └── helpers.ts     # Funções auxiliares
+
 
 
 ## Integração com Stripe
