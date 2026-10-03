@@ -44,9 +44,12 @@ const RestaurantMenuPage = async ({
     return notFound();
   }
   return (
-    <div>
-      <RestaurantHeader restaurant={restaurant} />
-      <RestaurantCategories restaurant={restaurant} />
+    <div className="min-h-dvh">
+      <RestaurantHeader restaurant={restaurant} consumptionMethod={method} />
+      <RestaurantCategories
+        restaurant={restaurant}
+        consumptionMethod={method}
+      />
     </div>
   );
 };

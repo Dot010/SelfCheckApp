@@ -19,7 +19,6 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 import {
   Form,
@@ -105,8 +104,7 @@ const FinishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
   };
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerTrigger asChild></DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent className="mx-auto max-w-lg">
         <DrawerHeader>
           <DrawerTitle>Finalizar Pedido</DrawerTitle>
           <DrawerDescription>

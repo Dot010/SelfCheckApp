@@ -3,13 +3,14 @@
 import { Prisma } from "@prisma/client";
 import { ChefHatIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import Image from "next/image";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useContext, useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatCurrency } from "@/helpers/format-currency";
 
-import CartSheet from "../../components/cart-sheet";
 import { CartContext } from "../../contexts/cart";
 
 interface ProductDetailsProps {
@@ -26,7 +27,10 @@ interface ProductDetailsProps {
 }
 
 const ProductDetails = ({ product }: ProductDetailsProps) => {
-  const { toggleCart, addProduct } = useContext(CartContext);
+  const { addProduct } = useContext(CartContext);
+  const { slug } = useParams<{ slug: string }>();
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const [quantity, setQuantity] = useState<number>(1);
   const handleDecreaseQuantity = () => {
@@ -45,7 +49,10 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
       ...product,
       quantity,
     });
-    toggleCart();
+    toast.success(`${product.name} na sacola`);
+    router.push(
+      `/${slug}/menu?consumptionMethod=${searchParams.get("consumptionMethod")}`,
+    );
   };
 
   return (
@@ -122,7 +129,6 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
           Adicionar ao carrinho
         </Button>
       </div>
-      <CartSheet />
     </>
   );
 };

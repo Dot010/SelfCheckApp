@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon, TrashIcon } from "lucide-react";
+import { MinusIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import Image from "next/image";
 import { useContext } from "react";
 
@@ -11,54 +11,55 @@ interface CartItemProps {
   product: CartProduct;
 }
 
-const CarProductItem = ({ product }: CartItemProps) => {
-  const { decreaseProductQuantity, increaseProductQuantity, removeProduct } =
+const CartProductItem = ({ product }: CartItemProps) => {
+  const { decreaseProductQuantity, increaseProductQuantity } =
     useContext(CartContext);
 
   return (
-    <div className="flex items-center justify-between">
-      {/* ...ESQUERDA */}
-      <div className="flex items-center gap-3">
-        <div className="relative h-20 w-20 rounded-xl bg-secondary">
-          <Image src={product.imageUrl} alt={product.name} fill />
-        </div>
-        <div className="space-y-1">
-          <p className="max-w-[90%] truncate text-xs">{product.name}</p>
-          <p className="text-sm font-semibold">
-            {formatCurrency(product.price)}
-          </p>
-          {/* ...Quantidade */}
-
-          <div className="flex items-center gap-1 text-center">
-            <Button
-              className="h-7 w-7 rounded-lg"
-              variant="outline"
-              onClick={() => decreaseProductQuantity(product.id)}
-            >
-              <ChevronLeftIcon />
-            </Button>
-            <p className="w-7 text-xs">{product.quantity}</p>
-            <Button
-              className="h-7 w-7 rounded-lg"
-              onClick={() => increaseProductQuantity(product.id)}
-            >
-              <ChevronRightIcon />
-            </Button>
-          </div>
-        </div>
+    <div className="flex items-center gap-3 py-3">
+      <div className="relative h-14 w-14 shrink-0 rounded-2xl bg-secondary">
+        <Image
+          src={product.imageUrl}
+          alt=""
+          fill
+          sizes="56px"
+          className="object-contain p-1"
+        />
       </div>
-
-      {/* Botao de remover */}
-
-      <Button
-        className="h-7 w-7 rounded-lg"
-        variant="outline"
-        onClick={() => removeProduct(product.id)}
-      >
-        <TrashIcon />
-      </Button>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium">{product.name}</p>
+        <p className="text-sm font-semibold">
+          {formatCurrency(product.price * product.quantity)}
+        </p>
+      </div>
+      <div className="flex items-center gap-1">
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 rounded-xl"
+          aria-label={
+            product.quantity === 1
+              ? `Remover ${product.name}`
+              : `Diminuir ${product.name}`
+          }
+          onClick={() => decreaseProductQuantity(product.id)}
+        >
+          {product.quantity === 1 ? <Trash2Icon /> : <MinusIcon />}
+        </Button>
+        <span className="w-6 text-center text-sm font-semibold">
+          {product.quantity}
+        </span>
+        <Button
+          size="icon"
+          className="h-8 w-8 rounded-xl"
+          aria-label={`Aumentar ${product.name}`}
+          onClick={() => increaseProductQuantity(product.id)}
+        >
+          <PlusIcon />
+        </Button>
+      </div>
     </div>
   );
 };
 
-export default CarProductItem;
+export default CartProductItem;
