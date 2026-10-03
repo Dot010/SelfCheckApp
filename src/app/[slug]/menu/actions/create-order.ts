@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { resolveSelectedOptions } from "@/helpers/product-options";
+import { getOpenStatus } from "@/helpers/restaurant-time";
 import { setCustomerCpf } from "@/lib/customer-cpf";
 import { db } from "@/lib/prisma";
 
@@ -51,10 +52,17 @@ export const createOrder = async (
 
   const restaurant = await db.restaurant.findUnique({
     where: { slug: data.slug },
-    select: { id: true },
+    select: { id: true, isPaused: true, openingHours: true },
   });
   if (!restaurant) {
     return { ok: false, error: "Restaurante não encontrado." };
+  }
+  if (restaurant.isPaused) {
+    return { ok: false, error: "Os pedidos estão pausados no momento." };
+  }
+  const openStatus = getOpenStatus(restaurant.openingHours);
+  if (!openStatus.isOpen) {
+    return { ok: false, error: `Estamos fechados agora. ${openStatus.label}.` };
   }
 
   // Prices and options always come from the database, and only from this
@@ -75,6 +83,9 @@ export const createOrder = async (
         ok: false,
         error: "Alguns itens da sacola não estão mais disponíveis.",
       };
+    }
+    if (!product.isAvailable) {
+      return { ok: false, error: `${product.name} esgotou. Remova da sacola.` };
     }
     const selection = resolveSelectedOptions(
       product.optionGroups,

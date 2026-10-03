@@ -11,7 +11,12 @@ import CartProductItem from "./cart-product-item";
 import FinishOrderDialog from "./finish-order-dialog";
 
 // The cart contents, shared by the desktop sidebar and the mobile sheet.
-const CartPanel = () => {
+interface CartPanelProps {
+  // Set when the restaurant is closed or paused; checkout is disabled.
+  blockedMessage: string | null;
+}
+
+const CartPanel = ({ blockedMessage }: CartPanelProps) => {
   const [finishOrderDialogIsOpen, setFinishOrderDialogIsOpen] = useState(false);
   const { items, total, totalQuantity } = useContext(CartContext);
 
@@ -43,10 +48,18 @@ const CartPanel = () => {
         <span>Total</span>
         <span>{formatCurrency(total)}</span>
       </div>
+      {blockedMessage && (
+        <p
+          role="status"
+          className="rounded-2xl bg-amber-100 p-3 text-sm text-amber-900"
+        >
+          {blockedMessage}
+        </p>
+      )}
       <Button
         size="lg"
         className="w-full rounded-full"
-        disabled={items.length === 0}
+        disabled={items.length === 0 || Boolean(blockedMessage)}
         onClick={() => setFinishOrderDialogIsOpen(true)}
       >
         Finalizar pedido

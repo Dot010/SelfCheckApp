@@ -11,7 +11,14 @@ interface RestaurantHeaderProps {
     "name" | "slug" | "description" | "avatarImageUrl" | "coverImageUrl"
   >;
   consumptionMethod: ConsumptionMethod;
+  status: { label: string; tone: "open" | "closed" | "warning" };
 }
+
+const statusClassName = {
+  open: "text-success",
+  closed: "text-muted-foreground",
+  warning: "text-amber-800",
+};
 
 const consumptionMethodLabel: Record<ConsumptionMethod, string> = {
   DINE_IN: "Comer aqui",
@@ -21,6 +28,7 @@ const consumptionMethodLabel: Record<ConsumptionMethod, string> = {
 const RestaurantHeader = ({
   restaurant,
   consumptionMethod,
+  status,
 }: RestaurantHeaderProps) => {
   return (
     <header>
@@ -70,7 +78,9 @@ const RestaurantHeader = ({
               <h1 className="text-2xl font-extrabold">{restaurant.name}</h1>
               <p className="flex flex-wrap gap-x-3 text-sm text-muted-foreground">
                 <span>{restaurant.description}</span>
-                <span className="font-medium text-success">Aberto agora</span>
+                <span className={`font-medium ${statusClassName[status.tone]}`}>
+                  {status.label}
+                </span>
               </p>
             </div>
           </div>

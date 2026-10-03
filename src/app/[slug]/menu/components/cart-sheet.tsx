@@ -13,7 +13,7 @@ import { CartContext } from "../contexts/cart";
 import CartPanel from "./cart-panel";
 
 // Cart for phones and tablets; on desktop the cart is always visible instead.
-const CartSheet = () => {
+const CartSheet = ({ blockedMessage }: { blockedMessage: string | null }) => {
   const { isOpen, toggleCart } = useContext(CartContext);
   return (
     <Sheet open={isOpen} onOpenChange={toggleCart}>
@@ -26,7 +26,7 @@ const CartSheet = () => {
           Itens escolhidos e total do pedido
         </SheetDescription>
         <div className="mx-auto max-w-xl">
-          <CartPanel />
+          <CartPanel blockedMessage={blockedMessage} />
         </div>
       </SheetContent>
     </Sheet>

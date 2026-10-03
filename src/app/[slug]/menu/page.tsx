@@ -1,6 +1,7 @@
 import { ConsumptionMethod } from "@prisma/client";
 import { notFound, redirect } from "next/navigation";
 
+import { getOpenStatus } from "@/helpers/restaurant-time";
 import { db } from "@/lib/prisma";
 
 import RestaurantCategories from "../components/categories";
@@ -34,6 +35,7 @@ const RestaurantMenuPage = async ({
   const restaurant = await db.restaurant.findUnique({
     where: { slug },
     include: {
+      openingHours: true,
       menuCategories: {
         include: { products: true },
       },
@@ -43,12 +45,32 @@ const RestaurantMenuPage = async ({
   if (!restaurant) {
     return notFound();
   }
+  const openStatus = getOpenStatus(restaurant.openingHours);
+  // Shown in the cart instead of letting the customer reach checkout.
+  const orderingBlockedMessage = restaurant.isPaused
+    ? "A cozinha pausou os pedidos por alguns minutos. Você pode montar a sacola e finalizar quando voltar."
+    : !openStatus.isOpen
+      ? `Estamos fechados agora. ${openStatus.label}.`
+      : null;
+
   return (
     <div className="min-h-dvh">
-      <RestaurantHeader restaurant={restaurant} consumptionMethod={method} />
+      <RestaurantHeader
+        restaurant={restaurant}
+        consumptionMethod={method}
+        status={
+          restaurant.isPaused
+            ? { label: "Pedidos pausados", tone: "warning" }
+            : {
+                label: openStatus.label,
+                tone: openStatus.isOpen ? "open" : "closed",
+              }
+        }
+      />
       <RestaurantCategories
         restaurant={restaurant}
         consumptionMethod={method}
+        orderingBlockedMessage={orderingBlockedMessage}
       />
     </div>
   );

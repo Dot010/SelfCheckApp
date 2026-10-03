@@ -20,9 +20,13 @@ model Restaurant {
   description    String
   avatarImageUrl String
   coverImageUrl  String
+  // When true the menu stays visible but new orders are refused.
+  isPaused       Boolean        @default(false)
   menuCategories MenuCategory[]
   products       Product[]
   orders         Order[]
+  users          User[]
+  openingHours   OpeningHours[]
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 }
@@ -44,6 +48,7 @@ model Product {
   price          Int
   imageUrl       String
   ingredients    String[]
+  isAvailable    Boolean              @default(true)
   orderProducts  OrderProduct[]
   restaurant     Restaurant           @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId   String
@@ -82,6 +87,33 @@ model OrderProduct {
   options   OrderProductOption[]
   createdAt DateTime             @default(now())
   updatedAt DateTime             @updatedAt
+}
+
+// Someone who can sign in to a restaurant's admin panel.
+model User {
+  id           String     @id @default(uuid())
+  name         String
+  email        String     @unique
+  // scrypt hash, see src/lib/password.ts
+  passwordHash String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+// One row per day the restaurant opens. Times are "HH:MM" in the restaurant's
+// local time; a closing time earlier than the opening time means after midnight.
+model OpeningHours {
+  id           String     @id @default(uuid())
+  // 0 = Sunday ... 6 = Saturday
+  weekday      Int
+  opensAt      String
+  closesAt     String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId String
+
+  @@unique([restaurantId, weekday])
 }
 
 // A choice the customer makes for a product, like "Tamanho" (pick exactly
@@ -130,6 +162,7 @@ enum OrderStatus {
   PAYMENT_CONFIRMED
   PAYMENT_FAILED
   IN_PREPARATION
+  READY
   FINISHED
 }
 
