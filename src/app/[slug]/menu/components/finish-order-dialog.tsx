@@ -10,6 +10,7 @@ import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { useDemoMode } from "@/components/demo-mode";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -29,11 +30,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { DEMO_TEST_CARD } from "@/lib/demo";
 
 import { createOrder } from "../actions/create-order";
 import { createStripeCheckout } from "../actions/create-stripe-checkout";
 import { CartContext } from "../contexts/cart";
-import { isValidCpf } from "../helpers/cpf";
+import { generateCpf, isValidCpf } from "../helpers/cpf";
 
 const formSchema = z.object({
   name: z.string().trim().min(1, {
@@ -62,6 +64,7 @@ const FinishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
   const { items } = useContext(CartContext);
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
+  const isDemo = useDemoMode();
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -117,6 +120,27 @@ const FinishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
           </DrawerDescription>
         </DrawerHeader>
         <div className="p-5">
+          {isDemo && (
+            <div className="mb-6 flex flex-col gap-3 rounded-2xl bg-secondary p-4 text-sm">
+              <p>
+                <strong>Demonstração:</strong> nenhuma cobrança é real. No
+                pagamento, use o cartão{" "}
+                <strong className="whitespace-nowrap">{DEMO_TEST_CARD}</strong>,
+                com qualquer data futura e qualquer CVC.
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                className="self-start rounded-full"
+                onClick={() => {
+                  form.setValue("name", "Visitante", { shouldValidate: true });
+                  form.setValue("cpf", generateCpf(), { shouldValidate: true });
+                }}
+              >
+                Preencher com dados de teste
+              </Button>
+            </div>
+          )}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField

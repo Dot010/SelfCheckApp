@@ -38,3 +38,17 @@ export const isValidCpf = (cpf: string): boolean => {
 
   return secondVerifier === parseInt(cpf.charAt(10));
 };
+
+// A random CPF with valid check digits, formatted as 000.000.000-00. Used for
+// test data only; it doesn't belong to anyone on purpose.
+export const generateCpf = (random = Math.random) => {
+  const digits = Array.from({ length: 9 }, () => Math.floor(random() * 10));
+  for (const length of [9, 10]) {
+    const sum = digits
+      .slice(0, length)
+      .reduce((acc, digit, index) => acc + digit * (length + 1 - index), 0);
+    digits.push(((sum * 10) % 11) % 10);
+  }
+  const d = digits.join("");
+  return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
+};
