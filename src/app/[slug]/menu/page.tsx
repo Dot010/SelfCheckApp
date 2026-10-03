@@ -1,7 +1,3 @@
-
-
-
-// import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { db } from "@/lib/prisma";
@@ -53,6 +49,3 @@ const RestaurantMenuPage = async ({ params, searchParams, }: RestaurantMenuPageP
 };
 
 export default RestaurantMenuPage;
-
-
-//http://localhost:3000/fsw-donalds/menu?consumptionMethod=DINE_IN  

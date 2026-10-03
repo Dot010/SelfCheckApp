@@ -56,15 +56,12 @@ export const createOrder = async (input: CreateOrderInput) => {
         0
       ),
       consumptionMethod: input.consumptionMethod,
-      restaurant: { connect: { id: restaurant.id } }, // conecta corretamente pelo ID
+      restaurant: { connect: { id: restaurant.id } },
     },
   });
 
 
   revalidatePath(`/${input.slug}/orders`);
 
-//   redirect(
-//     `/${input.slug}/orders?cpf=${removeCpfPunctuation(input.customerCpf)}`,
-//  );
   return order;
 };
