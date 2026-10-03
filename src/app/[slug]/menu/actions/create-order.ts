@@ -53,13 +53,12 @@ export const createOrder = async (input: CreateOrderInput) => {
       },
       total: productsWithPricesAndQuantities.reduce(
         (acc, product) => acc + product.price * product.quantity,
-        0
+        0,
       ),
       consumptionMethod: input.consumptionMethod,
       restaurant: { connect: { id: restaurant.id } },
     },
   });
-
 
   revalidatePath(`/${input.slug}/orders`);
 

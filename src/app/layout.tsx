@@ -14,7 +14,8 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "SelfCheck",
-  description: "Autoatendimento para restaurantes: cardápio digital, pagamento online e acompanhamento do pedido.",
+  description:
+    "Autoatendimento para restaurantes: cardápio digital, pagamento online e acompanhamento do pedido.",
 };
 
 export default function RootLayout({
