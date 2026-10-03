@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 240" role="img" aria-label="Açaí com ninho e morango"><title>Açaí com ninho e morango</title><g>
+<ellipse cx="150" cy="226" rx="104" ry="10" fill="#2B1F33" opacity=".08"/>
+<ellipse cx="150" cy="108" rx="122" ry="34" fill="#7DA62A"/>
+<ellipse cx="150" cy="111" rx="110" ry="27" fill="#4A1D6A"/>
+<path d="M70 104 q 30 -14 70 -4 t 80 0" fill="none" stroke="#6A3592" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+<g><ellipse cx="81.6" cy="111.5" rx="10.3" ry="12.4" fill="#D9243F"/><circle cx="78.8" cy="108.7" r="1.4" fill="#F7C6CF"/><circle cx="84.39999999999999" cy="112.9" r="1.4" fill="#F7C6CF"/></g><g><ellipse cx="108.1" cy="119.7" rx="10.3" ry="12.4" fill="#D9243F"/><circle cx="105.3" cy="116.9" r="1.4" fill="#F7C6CF"/><circle cx="110.89999999999999" cy="121.10000000000001" r="1.4" fill="#F7C6CF"/></g><g><ellipse cx="87.2" cy="110.8" rx="10.3" ry="12.4" fill="#D9243F"/><circle cx="84.4" cy="108" r="1.4" fill="#F7C6CF"/><circle cx="90" cy="112.2" r="1.4" fill="#F7C6CF"/></g><g><ellipse cx="198" cy="114.9" rx="10.3" ry="12.4" fill="#D9243F"/><circle cx="195.2" cy="112.10000000000001" r="1.4" fill="#F7C6CF"/><circle cx="200.8" cy="116.30000000000001" r="1.4" fill="#F7C6CF"/></g><g><ellipse cx="122.3" cy="113.1" rx="10.3" ry="12.4" fill="#D9243F"/><circle cx="119.5" cy="110.3" r="1.4" fill="#F7C6CF"/><circle cx="125.1" cy="114.5" r="1.4" fill="#F7C6CF"/></g><ellipse cx="149.9" cy="117.7" rx="17.9" ry="9.6" fill="#F3E6C8"/><ellipse cx="111.5" cy="114.5" rx="17.9" ry="9.6" fill="#F3E6C8"/><ellipse cx="171.5" cy="112.5" rx="17.9" ry="9.6" fill="#F3E6C8"/><path d="M68.6 107.0 q 13.6 -12.4 27.1 0 q 13.6 12.4 27.1 0 q 13.6 -12.4 27.1 0 q 13.6 12.4 27.1 0 q 13.6 -12.4 27.1 0 q 13.6 12.4 27.1 0" fill="none" stroke="#FFF3DA" stroke-width="5.5" stroke-linecap="round"/>
+<path d="M28 108 A122 34 0 0 0 272 108 C 270 182 222 222 150 224 C 78 222 30 182 28 108 Z" fill="#B8E04A"/>
+<path d="M28 108 A122 34 0 0 0 272 108" fill="none" stroke="#D3EF86" stroke-width="6"/>
+<path d="M60 170 Q 150 196 240 170" fill="none" stroke="#9CC43A" stroke-width="5" stroke-linecap="round"/>
+</g></svg>

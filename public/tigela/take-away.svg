@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Para levar"><title>Para levar</title>
+<circle cx="120" cy="120" r="112" fill="#F2EBF4"/>
+<ellipse cx="120" cy="196" rx="54" ry="9" fill="#2B1F33" opacity=".08"/>
+<path d="M78 86 h84 l-9 106 h-66 z" fill="#5B2A86"/>
+<path d="M98 86 v-12 a22 22 0 0 1 44 0 v12" fill="none" stroke="#2B1F33" stroke-width="7"/>
+<rect x="94" y="118" width="52" height="26" rx="13" fill="#B8E04A"/>
+<circle cx="110" cy="131" r="4" fill="#2B1F33"/><circle cx="130" cy="131" r="4" fill="#2B1F33"/></svg>
