@@ -89,7 +89,10 @@ const OrderList = ({ slug, orders }: OrderListProps) => {
             return (
               <article
                 key={order.id}
-                className="flex flex-col gap-4 rounded-3xl bg-card p-5 shadow-sm ring-1 ring-border"
+                className={cn(
+                  "flex flex-col gap-4 rounded-3xl bg-card p-5 shadow-sm ring-1 ring-border",
+                  order.status === "READY" && "ring-2 ring-success",
+                )}
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span
@@ -105,6 +108,12 @@ const OrderList = ({ slug, orders }: OrderListProps) => {
                     {dateFormatter.format(new Date(order.createdAt))}
                   </span>
                 </div>
+
+                {order.status === "READY" && (
+                  <p className="font-display text-lg font-bold text-success">
+                    Seu pedido está pronto! Retire no balcão.
+                  </p>
+                )}
 
                 {order.status !== "PAYMENT_FAILED" && (
                   <ol
