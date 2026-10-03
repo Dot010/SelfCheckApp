@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
+import { DemoModeProvider } from "@/components/demo-mode";
 import { getRestaurantBySlug } from "@/data/get-restaurant-by-slug";
+import { isDemoMode } from "@/lib/demo";
 
 import KioskMode from "./components/kiosk-mode";
 import { CartProvider } from "./menu/contexts/cart";
@@ -29,12 +31,14 @@ const RestaurantLayout = async ({
 }: RestaurantLayoutProps) => {
   const { slug } = await params;
   return (
-    <CartProvider key={slug} storageKey={`cart:${slug}`}>
-      {children}
-      <Suspense fallback={null}>
-        <KioskMode slug={slug} />
-      </Suspense>
-    </CartProvider>
+    <DemoModeProvider enabled={isDemoMode()}>
+      <CartProvider key={slug} storageKey={`cart:${slug}`}>
+        {children}
+        <Suspense fallback={null}>
+          <KioskMode slug={slug} />
+        </Suspense>
+      </CartProvider>
+    </DemoModeProvider>
   );
 };
 

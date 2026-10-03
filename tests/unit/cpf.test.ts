@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  generateCpf,
   isValidCpf,
   removeCpfPunctuation,
 } from "@/app/[slug]/menu/helpers/cpf";
@@ -27,5 +28,15 @@ describe("isValidCpf", () => {
 describe("removeCpfPunctuation", () => {
   it("keeps only the digits", () => {
     expect(removeCpfPunctuation("529.982.247-25")).toBe("52998224725");
+  });
+});
+
+describe("generateCpf", () => {
+  it("creates valid, formatted numbers", () => {
+    for (let i = 0; i < 200; i++) {
+      const cpf = generateCpf();
+      expect(cpf).toMatch(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/);
+      expect(isValidCpf(cpf)).toBe(true);
+    }
   });
 });

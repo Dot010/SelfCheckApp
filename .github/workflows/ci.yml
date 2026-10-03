@@ -15,7 +15,7 @@ env:
   STRIPE_SECRET_KEY: sk_test_ci_placeholder
   STRIPE_WEBHOOK_SECRET_KEY: whsec_ci_placeholder
   AUTH_SECRET: ci-only-secret-that-is-at-least-32-characters
-  SHOW_DEMO_LOGIN: "true"
+  DEMO_MODE: "true"
   NEXT_TELEMETRY_DISABLED: 1
 
 jobs:

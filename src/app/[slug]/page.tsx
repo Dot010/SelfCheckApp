@@ -1,7 +1,10 @@
+import { ChefHatIcon, MonitorIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { getRestaurantBySlug } from "@/data/get-restaurant-by-slug";
+import { isDemoMode } from "@/lib/demo";
 
 import ConsumptionMethodOption from "./components/consumption-method-option";
 
@@ -57,6 +60,33 @@ const RestaurantPage = async ({ params }: RestaurantPageProps) => {
             imageUrl="/tigela/take-away.svg"
           />
         </div>
+
+        {isDemoMode() && (
+          <aside className="w-full max-w-xl rounded-3xl bg-secondary p-5 text-left text-sm">
+            <p className="font-semibold">Este é um projeto de demonstração</p>
+            <p className="mt-1 text-muted-foreground">
+              Faça um pedido como cliente (o pagamento é de teste) e acompanhe
+              do outro lado do balcão. Os dados voltam ao original todo dia.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link
+                href={`/${slug}/admin/login`}
+                className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 font-medium ring-1 ring-border transition hover:bg-accent"
+              >
+                <ChefHatIcon className="h-4 w-4" />
+                Painel da cozinha
+              </Link>
+              <Link
+                href={`/${slug}/telao`}
+                target="_blank"
+                className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 font-medium ring-1 ring-border transition hover:bg-accent"
+              >
+                <MonitorIcon className="h-4 w-4" />
+                Telão de senhas
+              </Link>
+            </div>
+          </aside>
+        )}
       </div>
     </main>
   );

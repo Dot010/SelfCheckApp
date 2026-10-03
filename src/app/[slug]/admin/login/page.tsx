@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { getRestaurantBySlug } from "@/data/get-restaurant-by-slug";
 import { getAdminSession } from "@/lib/auth";
+import { isDemoMode } from "@/lib/demo";
 
 import LoginForm from "./login-form";
 
@@ -34,10 +35,7 @@ const LoginPage = async ({ params }: LoginPageProps) => {
             Entre para acompanhar pedidos e editar o cardápio.
           </p>
         </div>
-        <LoginForm
-          slug={slug}
-          showDemoHint={process.env.SHOW_DEMO_LOGIN === "true"}
-        />
+        <LoginForm slug={slug} isDemo={isDemoMode()} />
       </div>
     </main>
   );

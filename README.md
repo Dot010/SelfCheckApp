@@ -41,6 +41,16 @@ O seed cria a **Tigela**, uma loja de açaí fictícia com açaís, bowls, smoot
 - Status do pedido atualizado sozinho enquanto ele está em andamento, com aviso quando fica pronto
 - Modo totem: abra qualquer página com `?totem=1` no aparelho do balcão. Depois de 60 s sem uso ele pergunta "Ainda está aí?" e, sem resposta, limpa a sacola e o CPF e volta ao início (`?totem=0` desliga)
 
+### Modo demonstração (`DEMO_MODE="true"`)
+
+Feito para a versão pública do portfólio, para qualquer pessoa testar sem cadastro:
+
+- A tela inicial explica a demonstração e leva ao painel da cozinha e ao telão
+- Login no painel com um clique
+- No checkout, aviso do cartão de teste do Stripe e botão que preenche nome e um CPF de teste válido
+- A loja fica aberta 24 horas, para visitantes de qualquer fuso
+- Todo dia às 3h (horário de Brasília) os dados voltam ao original, desfazendo o que os visitantes mudaram (Vercel Cron em `vercel.json`)
+
 ### Telão de senhas (`/tigela/telao`)
 
 - Números em preparo e prontos para retirar, para uma TV no balcão
@@ -133,19 +143,19 @@ npm test            # testes unitários (Vitest)
 npm run test:e2e    # testes ponta a ponta (Playwright)
 ```
 
-Os testes ponta a ponta usam o banco do `.env`, então rode-os num banco de desenvolvimento com o seed aplicado, nunca no de produção (eles deixam a loja aberta o dia todo; rode o seed de novo para voltar ao horário padrão). Na primeira vez, instale o navegador com `npx playwright install chromium`. O Playwright sobe o app com `npm start` (faça `npm run build` antes) ou reaproveita um servidor que já esteja rodando na porta 3000. O Stripe não é chamado de verdade: o pagamento é confirmado por um webhook assinado com o mesmo `STRIPE_WEBHOOK_SECRET_KEY` do servidor, que precisa estar definido no terminal onde os testes rodam.
+Os testes ponta a ponta usam o banco do `.env`, então rode-os num banco de desenvolvimento com o seed aplicado, nunca no de produção (eles deixam a loja aberta o dia todo; rode o seed de novo para voltar ao horário padrão). Na primeira vez, instale o navegador com `npx playwright install chromium`. O Playwright sobe o app com `npm start` (faça `npm run build` antes) ou reaproveita um servidor que já esteja rodando na porta 3000. O Stripe não é chamado de verdade: o pagamento é confirmado por um webhook assinado com o `STRIPE_WEBHOOK_SECRET_KEY` lido do `.env`, o mesmo que o app usa.
 
 A cada push e pull request, o GitHub Actions roda lint, tipos, formatação, testes unitários e build, e em paralelo os testes ponta a ponta com um PostgreSQL próprio.
 
 ## Publicando (checklist)
 
 1. **Gere um `AUTH_SECRET` novo só para produção** com `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`. Não reaproveite o do seu `.env` local.
-2. Na Vercel, cadastre as variáveis de ambiente: `DATABASE_URL`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET_KEY`, `AUTH_SECRET` e, se quiser mostrar o login de demonstração, `SHOW_DEMO_LOGIN="true"`.
+2. Na Vercel, cadastre as variáveis de ambiente: `DATABASE_URL`, `STRIPE_SECRET_KEY` (use a chave de **teste** numa demonstração), `STRIPE_WEBHOOK_SECRET_KEY` e `AUTH_SECRET`. Para a demonstração pública, cadastre também `DEMO_MODE="true"` e um `CRON_SECRET` gerado do mesmo jeito que o `AUTH_SECRET`.
 3. No Stripe, crie um webhook para `https://SEU-DOMINIO/api/webhooks/stripe` com os eventos `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed` e `checkout.session.expired`. O `whsec_...` desse webhook é o `STRIPE_WEBHOOK_SECRET_KEY` de produção (não é o mesmo do `stripe listen`).
 4. Ative o Pix em **Configurações → Pagamentos → Formas de pagamento** no Stripe.
-5. Aplique as migrations e o seed no banco de produção: `npx prisma migrate deploy` e `npx prisma db seed` com a `DATABASE_URL` de produção.
+5. Aplique as migrations e o seed no banco de produção: `npx prisma migrate deploy` e `npx prisma db seed` com a `DATABASE_URL` de produção (e `DEMO_MODE="true"`, para a loja já nascer aberta 24 horas).
 6. Confira o nome da conta do Stripe, que aparece na página de pagamento.
-7. Troque a senha do login de demonstração, ou desligue `SHOW_DEMO_LOGIN`, se a loja for usada de verdade.
+7. Para uma loja de verdade, deixe `DEMO_MODE` desligado, use as chaves de produção do Stripe e troque a senha do login de demonstração.
 
 ## Autor
 
