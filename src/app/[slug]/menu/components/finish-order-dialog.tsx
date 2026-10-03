@@ -59,7 +59,7 @@ interface FinishOrderDialogProps {
 
 const FinishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
   const { slug } = useParams<{ slug: string }>();
-  const { products } = useContext(CartContext);
+  const { items } = useContext(CartContext);
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm<FormSchema>({
@@ -80,7 +80,12 @@ const FinishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
         consumptionMethod,
         customerCpf: data.cpf,
         customerName: data.name,
-        products,
+        items: items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          optionIds: item.options.map((option) => option.id),
+          notes: item.notes,
+        })),
         slug,
       });
       if (!order.ok) {

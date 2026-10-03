@@ -4,6 +4,7 @@ import { ConsumptionMethod } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { resolveSelectedOptions } from "@/helpers/product-options";
 import { setCustomerCpf } from "@/lib/customer-cpf";
 import { db } from "@/lib/prisma";
 
@@ -16,11 +17,13 @@ const createOrderSchema = z.object({
   consumptionMethod: z.enum(ConsumptionMethod),
   customerName: z.string().trim().min(1).max(60),
   customerCpf: z.string().refine(isValidCpf),
-  products: z
+  items: z
     .array(
       z.object({
-        id: z.string().min(1),
+        productId: z.string().min(1),
         quantity: z.number().int().min(1).max(MAX_QUANTITY_PER_ITEM),
+        optionIds: z.array(z.string().min(1)).max(20).default([]),
+        notes: z.string().trim().max(140).optional(),
       }),
     )
     .min(1)
@@ -54,35 +57,42 @@ export const createOrder = async (
     return { ok: false, error: "Restaurante não encontrado." };
   }
 
-  // The same product can show up more than once; merge the quantities.
-  const quantities = new Map<string, number>();
-  for (const product of data.products) {
-    quantities.set(
-      product.id,
-      (quantities.get(product.id) ?? 0) + product.quantity,
-    );
-  }
-
-  // Prices always come from the database, and only from this restaurant.
+  // Prices and options always come from the database, and only from this
+  // restaurant's products.
   const products = await db.product.findMany({
     where: {
-      id: { in: [...quantities.keys()] },
+      id: { in: data.items.map((item) => item.productId) },
       restaurantId: restaurant.id,
     },
-    select: { id: true, price: true },
+    include: { optionGroups: { include: { options: true } } },
   });
-  if (products.length !== quantities.size) {
-    return {
-      ok: false,
-      error: "Alguns itens da sacola não estão mais disponíveis.",
-    };
-  }
 
-  const orderProducts = products.map((product) => ({
-    productId: product.id,
-    price: product.price,
-    quantity: Math.min(quantities.get(product.id)!, MAX_QUANTITY_PER_ITEM),
-  }));
+  const orderProducts = [];
+  for (const item of data.items) {
+    const product = products.find((p) => p.id === item.productId);
+    if (!product) {
+      return {
+        ok: false,
+        error: "Alguns itens da sacola não estão mais disponíveis.",
+      };
+    }
+    const selection = resolveSelectedOptions(
+      product.optionGroups,
+      item.optionIds,
+    );
+    if (!selection.ok) {
+      return { ok: false, error: `${product.name}: ${selection.error}` };
+    }
+    orderProducts.push({
+      productId: product.id,
+      quantity: item.quantity,
+      price: product.price + selection.extraPrice,
+      notes: item.notes || null,
+      options: {
+        create: selection.options.map(({ name, price }) => ({ name, price })),
+      },
+    });
+  }
 
   const order = await db.order.create({
     data: {
@@ -91,10 +101,10 @@ export const createOrder = async (
       customerCpf: removeCpfPunctuation(data.customerCpf),
       consumptionMethod: data.consumptionMethod,
       total: orderProducts.reduce(
-        (acc, product) => acc + product.price * product.quantity,
+        (acc, item) => acc + item.price * item.quantity,
         0,
       ),
-      orderProducts: { createMany: { data: orderProducts } },
+      orderProducts: { create: orderProducts },
       restaurant: { connect: { id: restaurant.id } },
     },
     select: { id: true },

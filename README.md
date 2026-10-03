@@ -21,15 +21,17 @@ O seed cria a **Tigela**, uma loja de açaí fictícia com açaís, bowls, smoot
 
 - Escolha entre comer no local ou levar
 - Cardápio por categorias, página de produto e sacola salva no navegador
+- Monte seu açaí: tamanho, complementos com preço e limite de escolhas, observação e prévia em 3D (three.js + GSAP)
 - Checkout com validação de nome e CPF
-- Pagamento com cartão ou boleto pelo Stripe Checkout
-- Status do pedido atualizado pelo webhook do Stripe, inclusive para pagamentos assíncronos (boleto)
+- Pagamento com Pix, cartão ou boleto pelo Stripe Checkout
+- Status do pedido atualizado pelo webhook do Stripe, inclusive para pagamentos assíncronos (Pix e boleto)
 - Consulta de pedidos pelo CPF, guardado em cookie e nunca na URL
 
 ## Decisões técnicas
 
 - **Preços em centavos (inteiros).** Valores monetários nunca usam ponto flutuante, evitando erros de arredondamento no total e no Stripe.
 - **O servidor não confia no cliente.** Server Actions validam a entrada com Zod e buscam preços e itens no banco. A sessão do Stripe é montada a partir do pedido salvo.
+- **Opções validadas no servidor.** Tamanho e complementos são conferidos contra os grupos do produto (mínimo, máximo e se a opção pertence ao produto), e o preço é recalculado pelo banco. O pedido guarda uma cópia das opções escolhidas.
 - **Webhook idempotente.** Só pedidos pendentes mudam de status, então eventos repetidos do Stripe não causam efeitos duplicados.
 
 ## Estrutura
@@ -71,6 +73,10 @@ npm run dev
 Acesse http://localhost:3000. A página inicial leva ao primeiro restaurante cadastrado.
 
 > O seed apaga os restaurantes existentes (e, em cascata, seus pedidos) antes de criar a Tigela.
+
+### Formas de pagamento
+
+O checkout mostra as formas de pagamento ativadas no painel do Stripe, em **Configurações → Pagamentos → Formas de pagamento**. Para aceitar Pix, ative-o ali; o código não precisa mudar. Pix e boleto são confirmados pelo webhook quando o pagamento cai.
 
 ### Testando pagamentos
 
