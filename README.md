@@ -27,11 +27,20 @@ O seed cria a **Tigela**, uma loja de açaí fictícia com açaís, bowls, smoot
 - Status do pedido atualizado pelo webhook do Stripe, inclusive para pagamentos assíncronos (Pix e boleto)
 - Consulta de pedidos pelo CPF, guardado em cookie e nunca na URL
 
+### Painel do restaurante (`/tigela/admin`)
+
+- Login com senha (hash scrypt) e sessão em cookie assinado (JWT)
+- Quadro de pedidos pagos: Pagos → Em preparo → Prontos → Entregue, com atualização automática
+- Cardápio: marcar produtos como esgotados e editar nome, descrição e preço
+- Configurações: pausar pedidos, dados da loja e horário de funcionamento por dia
+
 ## Decisões técnicas
 
 - **Preços em centavos (inteiros).** Valores monetários nunca usam ponto flutuante, evitando erros de arredondamento no total e no Stripe.
 - **O servidor não confia no cliente.** Server Actions validam a entrada com Zod e buscam preços e itens no banco. A sessão do Stripe é montada a partir do pedido salvo.
 - **Opções validadas no servidor.** Tamanho e complementos são conferidos contra os grupos do produto (mínimo, máximo e se a opção pertence ao produto), e o preço é recalculado pelo banco. O pedido guarda uma cópia das opções escolhidas.
+- **Autenticação sem dependências pesadas.** Senhas com `scrypt` do próprio Node e sessão em JWT assinado com `jose`. O middleware protege as páginas do painel e cada server action confere a sessão de novo, porque actions podem ser chamadas diretamente.
+- **Horário local do restaurante.** "Hoje", "aberto agora" e os horários de pedidos usam o fuso de São Paulo, independente do fuso do servidor.
 - **Webhook idempotente.** Só pedidos pendentes mudam de status, então eventos repetidos do Stripe não causam efeitos duplicados.
 
 ## Estrutura
@@ -70,7 +79,7 @@ npx prisma db seed
 npm run dev
 ```
 
-Acesse http://localhost:3000. A página inicial leva ao primeiro restaurante cadastrado.
+Acesse http://localhost:3000. A página inicial leva ao primeiro restaurante cadastrado. O painel fica em http://localhost:3000/tigela/admin (login de demonstração: `demo@tigela.com` / `tigela123`).
 
 > O seed apaga os restaurantes existentes (e, em cascata, seus pedidos) antes de criar a Tigela.
 
