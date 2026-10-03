@@ -12,6 +12,7 @@ import {
   orderSteps,
   toneClassName,
 } from "@/helpers/order-status";
+import { RESTAURANT_TIME_ZONE } from "@/helpers/restaurant-time";
 import { cn } from "@/lib/utils";
 
 import { forgetCustomer } from "../actions/customer";
@@ -32,7 +33,9 @@ interface OrderListProps {
   >;
 }
 
+// A fixed time zone keeps the server render and the browser render identical.
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
+  timeZone: RESTAURANT_TIME_ZONE,
   day: "2-digit",
   month: "2-digit",
   hour: "2-digit",
