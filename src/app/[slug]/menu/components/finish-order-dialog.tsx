@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ConsumptionMethod } from "@prisma/client";
-import { loadStripe } from "@stripe/stripe-js";
 import { Loader2Icon } from "lucide-react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useContext, useState } from "react";
@@ -73,41 +72,34 @@ const FinishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
     shouldUnregister: true,
   });
   const onSubmit = async (data: FormSchema) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const consumptionMethod = searchParams.get(
         "consumptionMethod",
       ) as ConsumptionMethod;
-
-      const result = await createOrder({
+      const order = await createOrder({
         consumptionMethod,
         customerCpf: data.cpf,
         customerName: data.name,
         products,
         slug,
       });
-      if (!result.ok) {
-        toast.error(result.error);
+      if (!order.ok) {
+        toast.error(order.error);
+        setIsLoading(false);
         return;
       }
-      const { sessionId } = await createStripeCheckout({
-        products,
-        orderId: result.orderId,
-        slug,
-        consumptionMethod,
-      });
-
-      if (!process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY) return;
-
-      const stripe = await loadStripe(
-        process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY,
-      );
-      stripe?.redirectToCheckout({
-        sessionId: sessionId,
-      });
+      const checkout = await createStripeCheckout(order.orderId);
+      if (!checkout.ok) {
+        toast.error(checkout.error);
+        setIsLoading(false);
+        return;
+      }
+      // Keep the button loading while the browser goes to Stripe.
+      window.location.assign(checkout.url);
     } catch (error) {
       console.error(error);
-    } finally {
+      toast.error("Não foi possível finalizar o pedido. Tente novamente.");
       setIsLoading(false);
     }
   };
