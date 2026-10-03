@@ -3,7 +3,7 @@ import { OrderStatus } from "@prisma/client";
 type Tone = "info" | "warning" | "success" | "danger" | "neutral";
 
 // How each status is shown to the customer. `step` drives the progress bar:
-// 0 = not paid yet, 1 = paid, 2 = being prepared, 3 = done.
+// 0 = not paid yet, 1 = paid, 2 = being prepared, 3 = ready for pickup.
 export const orderStatusDisplay: Record<
   OrderStatus,
   { label: string; tone: Tone; step: number }
@@ -12,7 +12,8 @@ export const orderStatusDisplay: Record<
   PAYMENT_FAILED: { label: "Pagamento não aprovado", tone: "danger", step: 0 },
   PAYMENT_CONFIRMED: { label: "Pagamento confirmado", tone: "info", step: 1 },
   IN_PREPARATION: { label: "Em preparo", tone: "warning", step: 2 },
-  FINISHED: { label: "Concluído", tone: "success", step: 3 },
+  READY: { label: "Pronto para retirar", tone: "success", step: 3 },
+  FINISHED: { label: "Entregue", tone: "neutral", step: 3 },
 };
 
 export const toneClassName: Record<Tone, string> = {
@@ -23,4 +24,4 @@ export const toneClassName: Record<Tone, string> = {
   neutral: "bg-muted text-muted-foreground",
 };
 
-export const orderSteps = ["Pago", "Em preparo", "Concluído"];
+export const orderSteps = ["Pago", "Em preparo", "Pronto"];
