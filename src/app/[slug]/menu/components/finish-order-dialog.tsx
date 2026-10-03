@@ -95,7 +95,6 @@ const FinishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
         orderId: result.orderId,
         slug,
         consumptionMethod,
-        cpf: data.cpf,
       });
 
       if (!process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY) return;

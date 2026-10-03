@@ -4,6 +4,7 @@ import { ConsumptionMethod } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { setCustomerCpf } from "@/lib/customer-cpf";
 import { db } from "@/lib/prisma";
 
 import { isValidCpf, removeCpfPunctuation } from "../helpers/cpf";
@@ -99,6 +100,7 @@ export const createOrder = async (
     select: { id: true },
   });
 
+  await setCustomerCpf(data.customerCpf);
   revalidatePath(`/${data.slug}/orders`);
 
   return { ok: true, orderId: order.id };

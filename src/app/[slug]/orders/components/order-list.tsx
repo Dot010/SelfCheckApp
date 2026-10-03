@@ -10,6 +10,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "@/helpers/format-currency";
 
+import { forgetCustomer } from "../actions/customer";
+
 interface OrderListProps {
   orders: Array<
     Prisma.OrderGetPayload<{
@@ -42,6 +44,10 @@ const getStatusLabel = (status: OrderStatus) => {
 const OrderList = ({ orders }: OrderListProps) => {
   const router = useRouter();
   const handleBackClick = () => router.back();
+  const handleChangeCpf = async () => {
+    await forgetCustomer();
+    router.refresh();
+  };
   return (
     <div className="space-y-6 p-6">
       <Button
@@ -53,10 +59,25 @@ const OrderList = ({ orders }: OrderListProps) => {
         <ChevronLeftIcon />
       </Button>
 
-      <div className="flex items-center gap-3">
-        <ScrollTextIcon />
-        <h2 className="text-lg font-semibold">Meus Pedidos</h2>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <ScrollTextIcon />
+          <h2 className="text-lg font-semibold">Meus Pedidos</h2>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="rounded-full"
+          onClick={handleChangeCpf}
+        >
+          Trocar CPF
+        </Button>
       </div>
+      {orders.length === 0 && (
+        <p className="text-sm text-muted-foreground">
+          Nenhum pedido encontrado para este CPF.
+        </p>
+      )}
       {orders.map((order) => (
         <Card key={order.id} className="p-4">
           <CardContent className="space-y-4 p-5">

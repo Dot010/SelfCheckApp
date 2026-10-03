@@ -7,14 +7,12 @@ import Stripe from "stripe";
 import { db } from "@/lib/prisma";
 
 import { CartProduct } from "../contexts/cart";
-import { removeCpfPunctuation } from "../helpers/cpf";
 
 interface createStripeCheckoutInput {
   products: CartProduct[];
   orderId: number;
   slug: string;
   consumptionMethod: ConsumptionMethod;
-  cpf: string;
 }
 
 export const createStripeCheckout = async ({
@@ -22,7 +20,6 @@ export const createStripeCheckout = async ({
   products,
   slug,
   consumptionMethod,
-  cpf,
 }: createStripeCheckoutInput) => {
   if (!process.env.STRIPE_SECRET_KEY) {
     throw new Error("Stripe secret key not found");
@@ -44,7 +41,6 @@ export const createStripeCheckout = async ({
 
   const searchParams = new URLSearchParams();
   searchParams.set("consumptionMethod", consumptionMethod);
-  searchParams.set("cpf", removeCpfPunctuation(cpf));
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card", "boleto"],

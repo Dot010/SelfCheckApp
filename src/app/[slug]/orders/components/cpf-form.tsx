@@ -1,9 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { PatternFormat } from "react-number-format";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -27,7 +29,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { isValidCpf, removeCpfPunctuation } from "../../menu/helpers/cpf";
+import { isValidCpf } from "../../menu/helpers/cpf";
+import { identifyCustomer } from "../actions/customer";
 
 const formSchema = z.object({
   cpf: z
@@ -49,9 +52,16 @@ const CpfForm = () => {
   });
 
   const router = useRouter();
-  const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
   const onSubmit = (data: FormSchema) => {
-    router.replace(`${pathname}?cpf=${removeCpfPunctuation(data.cpf)}`);
+    startTransition(async () => {
+      const result = await identifyCustomer(data.cpf);
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
+      }
+      router.refresh();
+    });
   };
   const handleCancel = () => {
     router.back();
@@ -89,11 +99,17 @@ const CpfForm = () => {
               )}
             />
             <DrawerFooter>
-              <Button variant="destructive" className="w-full rounded-full">
+              <Button
+                type="submit"
+                variant="destructive"
+                className="w-full rounded-full"
+                disabled={isPending}
+              >
                 Confirmar
               </Button>
               <DrawerClose asChild>
                 <Button
+                  type="button"
                   variant="outline"
                   className="w-full rounded-full"
                   onClick={handleCancel}
