@@ -1,7 +1,7 @@
 "use client";
 
 import { Product } from "@prisma/client";
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
 export interface CartProduct
   extends Pick<Product, "id" | "name" | "price" | "imageUrl"> {
@@ -18,6 +18,7 @@ export interface ICartContext {
   decreaseProductQuantity: (productId: string) => void;
   increaseProductQuantity: (productId: string) => void;
   removeProduct: (productId: string) => void;
+  clearCart: () => void;
 }
 
 export const CartContext = createContext<ICartContext>({
@@ -30,11 +31,55 @@ export const CartContext = createContext<ICartContext>({
   decreaseProductQuantity: () => {},
   increaseProductQuantity: () => {},
   removeProduct: () => {},
+  clearCart: () => {},
 });
 
-export const CartProvider = ({ children }: { children: ReactNode }) => {
+const isCartProduct = (value: unknown): value is CartProduct => {
+  const item = value as CartProduct;
+  return (
+    typeof item?.id === "string" &&
+    typeof item.name === "string" &&
+    typeof item.imageUrl === "string" &&
+    Number.isInteger(item.price) &&
+    Number.isInteger(item.quantity) &&
+    item.quantity > 0
+  );
+};
+
+const readStoredCart = (key: string): CartProduct[] => {
+  try {
+    const stored = JSON.parse(localStorage.getItem(key) ?? "[]");
+    return Array.isArray(stored) ? stored.filter(isCartProduct) : [];
+  } catch {
+    return [];
+  }
+};
+
+interface CartProviderProps {
+  children: ReactNode;
+  // Each restaurant gets its own cart, saved in the browser under this key.
+  storageKey: string;
+}
+
+export const CartProvider = ({ children, storageKey }: CartProviderProps) => {
   const [products, setProducts] = useState<CartProduct[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
+
+  // localStorage only exists in the browser, so the cart is restored after mount.
+  useEffect(() => {
+    setProducts(readStoredCart(storageKey));
+    setHasLoaded(true);
+  }, [storageKey]);
+
+  useEffect(() => {
+    if (!hasLoaded) return;
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(products));
+    } catch {
+      // Storage can be full or blocked (private mode); the cart still works in memory.
+    }
+  }, [products, hasLoaded, storageKey]);
 
   const total = products.reduce((acc, product) => {
     return acc + product.price * product.quantity;
@@ -43,63 +88,57 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const totalQuantity = products.reduce((acc, product) => {
     return acc + product.quantity;
   }, 0);
+
   const toggleCart = () => {
     setIsOpen((prev) => !prev);
   };
-  const addProduct = (product: CartProduct) => {
-    const productIsAlreadyOnTheCart = products.some(
-      (prevProduct) => prevProduct.id === product.id,
-    );
-    if (!productIsAlreadyOnTheCart) {
-      return setProducts((prev) => [...prev, product]);
-    }
+
+  const addProduct = ({ id, name, price, imageUrl, quantity }: CartProduct) => {
     setProducts((prevProducts) => {
-      return prevProducts.map((prevProduct) => {
-        if (prevProduct.id === product.id) {
-          return {
-            ...prevProduct,
-            quantity: prevProduct.quantity + product.quantity,
-          };
-        }
-        return prevProduct;
-      });
+      const isAlreadyOnTheCart = prevProducts.some((p) => p.id === id);
+      if (!isAlreadyOnTheCart) {
+        return [...prevProducts, { id, name, price, imageUrl, quantity }];
+      }
+      return prevProducts.map((prevProduct) =>
+        prevProduct.id === id
+          ? { ...prevProduct, quantity: prevProduct.quantity + quantity }
+          : prevProduct,
+      );
     });
   };
 
-  // Diminuir a quantidade
+  // Decreasing the last unit removes the item from the cart.
   const decreaseProductQuantity = (productId: string) => {
-    setProducts((prevProducts) => {
-      return prevProducts.map((prevProduct) => {
-        if (prevProduct.id !== productId) {
-          return prevProduct;
-        }
-
-        if (prevProduct.quantity === 1) {
-          return prevProduct;
-        }
-        return { ...prevProduct, quantity: prevProduct.quantity - 1 };
-      });
-    });
+    setProducts((prevProducts) =>
+      prevProducts
+        .map((prevProduct) =>
+          prevProduct.id === productId
+            ? { ...prevProduct, quantity: prevProduct.quantity - 1 }
+            : prevProduct,
+        )
+        .filter((prevProduct) => prevProduct.quantity > 0),
+    );
   };
 
-  // Aumentar Quantidade
   const increaseProductQuantity = (productId: string) => {
-    setProducts((prevProducts) => {
-      return prevProducts.map((prevProduct) => {
-        if (prevProduct.id !== productId) {
-          return prevProduct;
-        }
-        return { ...prevProduct, quantity: prevProduct.quantity + 1 };
-      });
-    });
+    setProducts((prevProducts) =>
+      prevProducts.map((prevProduct) =>
+        prevProduct.id === productId
+          ? { ...prevProduct, quantity: prevProduct.quantity + 1 }
+          : prevProduct,
+      ),
+    );
   };
-
-  // Remover item do carrinho
 
   const removeProduct = (productId: string) => {
     setProducts((prevProducts) =>
       prevProducts.filter((prevProduct) => prevProduct.id !== productId),
     );
+  };
+
+  const clearCart = () => {
+    setProducts([]);
+    setIsOpen(false);
   };
 
   return (
@@ -112,6 +151,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         decreaseProductQuantity,
         increaseProductQuantity,
         removeProduct,
+        clearCart,
         total,
         totalQuantity,
       }}
