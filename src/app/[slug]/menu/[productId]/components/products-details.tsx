@@ -72,7 +72,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                     alt={product.restaurant.name}
                     width={16}
                     height={16}
-                    className="rounded-r-full"
+                    className="rounded-full"
                 />
                 <p className="text-xs text-muted-foreground">
                     {product.restaurant.name}
@@ -80,29 +80,29 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
             </div>
             {/* Nome do produto */}
             <h2
-                className="mt-1 text text-xl font-semibold">
+                className="mt-1 text-xl font-semibold">
                 {product.name}</h2>
 
 
             {/* Preço e quantidade */}
 
-            <div className="flex items-center-justify-between mt-3">
+            <div className="mt-3 flex items-center justify-between">
                 <h3 className="text-xl font-semibold">
 
                     {formatCurrency(product.price)}
 
                 </h3>
 
-                <div className="flex item-center gap-3 text-center">
+                <div className="flex items-center gap-3 text-center">
 
                     <Button variant="outline"
-                        className="h-8 w-8 rounded-r-xl"
+                        className="h-8 w-8 rounded-xl"
                         onClick={handleDecreaseQuantity}>
                         <ChevronLeftIcon />
                     </Button>
                     <p className="w-4">{quantity}</p>
                     <Button variant="destructive"
-                        className="h-8 w-8 rounded-r-xl"
+                        className="h-8 w-8 rounded-xl"
                         onClick={handleIncreaseQuantity}>
                         <ChevronRightIcon />
                     </Button>

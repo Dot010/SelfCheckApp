@@ -50,12 +50,12 @@ const OrderList = ({ orders }: OrderListProps) => {
                 variant="secondary"
                 className="rounded-full"
                 onClick={handleBackClick}>
-                
+
                 <ChevronLeftIcon />
             </Button>
 
             <div
-                className="flex items center 
+                className="flex items-center
                 gap-3">
                 <ScrollTextIcon />
                 <h2 className="
@@ -71,13 +71,13 @@ const OrderList = ({ orders }: OrderListProps) => {
                     className="p-4">
                     <CardContent className="space-y-4 p-5">
                         <div
-                            className={`w-fit rounded-full px-2 py-1 text-xs font-semibold text-white 
+                            className={`w-fit rounded-full px-2 py-1 text-xs font-semibold text-white
                           ${order.status === OrderStatus.FINISHED ?
                                     "bg-green-500 text-white" :
                                     "bg-gray-200 text-gray-500"} `
                             }>
-                            
-                            
+
+
                                     {getStatusLabel(order.status)}
                         </div>
 
@@ -102,16 +102,16 @@ const OrderList = ({ orders }: OrderListProps) => {
                             </p>
                         </div>
 
-                        
+
 
                         <div className="space-y-2">
 
-                            
+
                         <Separator />
                         {order.orderProducts.map((
                             orderProduct) => (
                             <div key={orderProduct.id}
-                                className="flex-items-center 
+                                className="flex items-center
                                 gap-2">
                                 <div className="flex
                             h-5
@@ -137,9 +137,9 @@ const OrderList = ({ orders }: OrderListProps) => {
                             {formatCurrency(order.total)}</p>
 
                     </CardContent>
-                    
-                    
-                    
+
+
+
                 </Card>
             ))}
         </div>
@@ -147,5 +147,5 @@ const OrderList = ({ orders }: OrderListProps) => {
 
     );
 };
- 
+
 export default OrderList;

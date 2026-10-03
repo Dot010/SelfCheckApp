@@ -28,11 +28,11 @@ const CarProductItem = ({ product }: CartItemProps) => {
 
             </div>
             <div className="space-y-1">
-                <p className="text-xs max-w-{90%} truncate text-ellipsis"> {product.name}</p>
+                <p className="max-w-[90%] truncate text-xs">{product.name}</p>
                 <p className="text-sm font-semibold">{formatCurrency(product.price)}</p>
                 {/* ...Quantidade */}
                 
-                <div className="flex item-center gap-1 text-center">
+                <div className="flex items-center gap-1 text-center">
 
 
 
