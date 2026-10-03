@@ -1,5 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 
+import { hashPassword } from "../src/lib/password";
+
 const prismaClient = new PrismaClient();
 
 // Prices are in cents. Images live in /public/tigela.
@@ -233,6 +235,26 @@ const main = async () => {
           avatarImageUrl: "/tigela/logo.svg",
           coverImageUrl: "/tigela/cover.svg",
         },
+      });
+
+      // Demo login for the admin panel. Change it before going live.
+      await tx.user.create({
+        data: {
+          name: "Equipe Tigela",
+          email: "demo@tigela.com",
+          passwordHash: await hashPassword("tigela123"),
+          restaurantId: restaurant.id,
+        },
+      });
+
+      // Open every day from 9:00 to 23:00.
+      await tx.openingHours.createMany({
+        data: [0, 1, 2, 3, 4, 5, 6].map((weekday) => ({
+          weekday,
+          opensAt: "09:00",
+          closesAt: "23:00",
+          restaurantId: restaurant.id,
+        })),
       });
 
       // Categories are created one at a time, in menu order.
