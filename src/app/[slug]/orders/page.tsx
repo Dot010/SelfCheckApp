@@ -19,7 +19,7 @@ const OrdersPage = async ({ params, searchParams }: OrdersPageProps) => {
     return (
       <>
         {success}
-        <CpfForm />
+        <CpfForm slug={slug} />
       </>
     );
   }
@@ -32,15 +32,9 @@ const OrdersPage = async ({ params, searchParams }: OrdersPageProps) => {
       restaurant: { slug },
     },
     include: {
-      restaurant: {
-        select: {
-          name: true,
-          avatarImageUrl: true,
-        },
-      },
       orderProducts: {
         include: {
-          product: true,
+          product: { select: { name: true } },
         },
       },
     },
@@ -48,7 +42,7 @@ const OrdersPage = async ({ params, searchParams }: OrdersPageProps) => {
   return (
     <>
       {success}
-      <OrderList orders={orders} />
+      <OrderList slug={slug} orders={orders} />
     </>
   );
 };
