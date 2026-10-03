@@ -152,7 +152,6 @@ const FinishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
               <DrawerFooter>
                 <Button
                   type="submit"
-                  variant="destructive"
                   className="rounded-full"
                   disabled={isLoading}
                 >

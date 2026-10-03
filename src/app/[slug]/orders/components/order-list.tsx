@@ -84,8 +84,8 @@ const OrderList = ({ orders }: OrderListProps) => {
             <div
               className={`w-fit rounded-full px-2 py-1 text-xs font-semibold text-white ${
                 order.status === OrderStatus.FINISHED
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 text-gray-500"
+                  ? "bg-success text-white"
+                  : "bg-muted text-muted-foreground"
               } `}
             >
               {getStatusLabel(order.status)}
@@ -107,7 +107,7 @@ const OrderList = ({ orders }: OrderListProps) => {
               <Separator />
               {order.orderProducts.map((orderProduct) => (
                 <div key={orderProduct.id} className="flex items-center gap-2">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-400 text-xs font-semibold text-white">
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
                     {orderProduct.quantity}
                   </div>
                   <p className="text-sm">{orderProduct.product.name}</p>
