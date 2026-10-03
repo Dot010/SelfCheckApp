@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { getRestaurantBySlug } from "@/data/get-restaurant-by-slug";
 
+import KioskMode from "./components/kiosk-mode";
 import { CartProvider } from "./menu/contexts/cart";
 
 interface RestaurantLayoutProps {
@@ -29,6 +31,9 @@ const RestaurantLayout = async ({
   return (
     <CartProvider key={slug} storageKey={`cart:${slug}`}>
       {children}
+      <Suspense fallback={null}>
+        <KioskMode slug={slug} />
+      </Suspense>
     </CartProvider>
   );
 };
