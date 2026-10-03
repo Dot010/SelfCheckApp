@@ -38,17 +38,18 @@ model MenuCategory {
 }
 
 model Product {
-  id             String         @id @default(uuid())
+  id             String               @id @default(uuid())
   name           String
   description    String
   price          Int
   imageUrl       String
   ingredients    String[]
   orderProducts  OrderProduct[]
-  restaurant     Restaurant     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurant     Restaurant           @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId   String
-  menuCategory   MenuCategory   @relation(fields: [menuCategoryId], references: [id], onDelete: Cascade)
+  menuCategory   MenuCategory         @relation(fields: [menuCategoryId], references: [id], onDelete: Cascade)
   menuCategoryId String
+  optionGroups   ProductOptionGroup[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -69,15 +70,59 @@ model Order {
 }
 
 model OrderProduct {
-  id        String   @id @default(uuid())
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id        String               @id @default(uuid())
+  product   Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order     Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   Int
   quantity  Int
+  // Unit price including the chosen options, in cents.
   price     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  notes     String?
+  options   OrderProductOption[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+}
+
+// A choice the customer makes for a product, like "Tamanho" (pick exactly
+// one) or "Complementos" (pick up to four).
+model ProductOptionGroup {
+  id        String          @id @default(uuid())
+  name      String
+  minSelect Int             @default(0)
+  maxSelect Int             @default(1)
+  position  Int             @default(0)
+  product   Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  options   ProductOption[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model ProductOption {
+  id        String             @id @default(uuid())
+  name      String
+  // Added to the product price, in cents.
+  price     Int                @default(0)
+  isDefault Boolean            @default(false)
+  // Which topping or size the 3D bowl preview shows, e.g. "granola" or "size-500".
+  visualKey String?
+  position  Int                @default(0)
+  group     ProductOptionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId   String
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+// The options chosen for an order item. Name and price are copied so past
+// orders stay correct even if the menu changes later.
+model OrderProductOption {
+  id             String       @id @default(uuid())
+  name           String
+  price          Int
+  orderProduct   OrderProduct @relation(fields: [orderProductId], references: [id], onDelete: Cascade)
+  orderProductId String
+  createdAt      DateTime     @default(now())
 }
 
 enum OrderStatus {
