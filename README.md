@@ -1,130 +1,81 @@
 # SelfCheckApp
 
-Sistema de autoatendimento para restaurantes, desenvolvido com Next.js, TypeScript, Tailwind CSS, Prisma e Stripe.
+Sistema de autoatendimento para restaurantes: o cliente escolhe se vai comer no local ou levar, monta o pedido pelo cardápio digital, paga online com Stripe e acompanha o status do pedido.
 
-## Sobre o Projeto
+Demo: https://self-check-app.vercel.app
 
-O SelfCheckApp foi desenvolvido para oferecer uma experiência moderna, prática e eficiente no processo de pedidos em restaurantes.  
-A aplicação permite que o cliente visualize o cardápio, selecione produtos, finalize o pedido e realize o pagamento online, sem necessidade de atendimento presencial.
+## Tecnologias
 
-Além disso, o restaurante pode gerenciar seus pedidos em tempo real, atualizar produtos e monitorar o status das vendas, tudo em um único sistema.
-
-Acesse a aplicação:  
-https://self-check-app.vercel.app/fsw-donalds
-
-## Desenvolvedor
-
-Jonathan Carvalho — Desenvolvimento Full Stack
-
-## Tecnologias Utilizadas
-
-- Next.js 14 — Framework React para aplicações full stack  
-- TypeScript — Superset do JavaScript com tipagem estática  
-- Tailwind CSS — Framework CSS utilitário  
-- Prisma ORM — Manipulação de banco de dados  
-- PostgreSQL — Banco de dados relacional  
-- Stripe — Processamento de pagamentos online  
-- Vercel — Hospedagem e deploy contínuo  
+- Next.js 15 (App Router, Server Components e Server Actions)
+- React 19 e TypeScript
+- Tailwind CSS e shadcn/ui
+- Prisma ORM com PostgreSQL
+- Stripe Checkout e webhooks
+- Zod e React Hook Form para validação
 
 ## Funcionalidades
 
-### Pedidos
-- Criação e visualização de pedidos em tempo real  
-- Atualização automática de status após confirmação de pagamento  
-- Interface intuitiva e responsiva para o cliente  
+- Escolha entre comer no local ou levar
+- Cardápio por categorias, página de produto e sacola salva no navegador
+- Checkout com validação de nome e CPF
+- Pagamento com cartão ou boleto pelo Stripe Checkout
+- Status do pedido atualizado pelo webhook do Stripe, inclusive para pagamentos assíncronos (boleto)
+- Consulta de pedidos pelo CPF, guardado em cookie e nunca na URL
 
-### Pagamentos
-- Integração com Stripe Checkout  
-- Processamento seguro de pagamentos  
-- Atualização de pedidos via webhook Stripe  
+## Decisões técnicas
 
-### Restaurante
-- Gerenciamento de produtos e cardápio  
-- Controle e acompanhamento dos pedidos  
-- Revalidação automática de páginas  
+- **Preços em centavos (inteiros).** Valores monetários nunca usam ponto flutuante, evitando erros de arredondamento no total e no Stripe.
+- **O servidor não confia no cliente.** Server Actions validam a entrada com Zod e buscam preços e itens no banco. A sessão do Stripe é montada a partir do pedido salvo.
+- **Webhook idempotente.** Só pedidos pendentes mudam de status, então eventos repetidos do Stripe não causam efeitos duplicados.
 
-### Interface
-- Design limpo e responsivo  
-- Componentes reutilizáveis  
-- Feedback visual em todas as ações do usuário  
+## Estrutura
 
-## Estrutura do Projeto
 ```text
 src/
 ├── app/
-│ ├── [slug]/ # Área do restaurante
-│ │ ├── menu/ # Exibição do cardápio e produtos
-│ │ ├── orders/ # Pedidos e status
-│ │ └── api/ # Integração com Stripe e banco
-│ └── components/ # Componentes reutilizáveis
-├── lib/
-│ └── prisma.ts # Configuração do Prisma ORM
-├── styles/
-│ └── globals.css # Estilos globais
-└── utils/
-└── helpers.ts # Funções auxiliares
+│   ├── [slug]/                 # Páginas de cada restaurante
+│   │   ├── menu/               # Cardápio, produto, sacola e checkout
+│   │   │   ├── actions/        # Server Actions (criar pedido, checkout)
+│   │   │   ├── contexts/       # Contexto da sacola
+│   │   │   └── helpers/        # Validação de CPF
+│   │   └── orders/             # Acompanhamento de pedidos
+│   └── api/webhooks/stripe/    # Webhook do Stripe
+├── components/ui/              # Componentes shadcn/ui
+├── data/                       # Consultas reutilizáveis
+├── helpers/                    # Formatação de moeda
+└── lib/                        # Prisma, Stripe e cookies
+prisma/
+├── schema.prisma
+├── migrations/
+└── seed.ts
 ```
 
+## Rodando localmente
 
-## Integração com Stripe
+Pré-requisitos: Node.js 20+, PostgreSQL e a [Stripe CLI](https://docs.stripe.com/stripe-cli).
 
-O sistema se comunica diretamente com a API do Stripe para processamento de pagamentos.  
-O webhook recebe os seguintes eventos principais:
-
-- `checkout.session.completed` → Atualiza o pedido para *Pagamento Confirmado*  
-- `charge.failed` → Atualiza o pedido para *Pagamento Falhou*  
-
-## Execução Local
-
-1. Clone o repositório  
 ```bash
 git clone https://github.com/Dot010/SelfCheckApp.git
 cd SelfCheckApp
-Instale as dependências
-
 npm install
-
-
-Configure o arquivo .env
-
-DATABASE_URL="postgresql://usuario:senha@localhost:5432/selfcheckapp"
-STRIPE_SECRET_KEY="sk_test_..."
-STRIPE_WEBHOOK_SECRET_KEY="whsec_..."
-NEXT_PUBLIC_STRIPE_PUBLIC_KEY="pk_test_..."
-
-
-Execute as migrações do Prisma
-
+cp .env.example .env   # preencha as variáveis
 npx prisma migrate dev
-
-
-Inicie o servidor
-
+npx prisma db seed
 npm run dev
+```
 
+Acesse http://localhost:3000.
 
-Acesse em: http://localhost:3000
+### Testando pagamentos
 
-Teste de Webhook
+Em outro terminal, encaminhe os eventos do Stripe para o webhook local:
 
-Para testar localmente os eventos de pagamento:
-
+```bash
 stripe listen --forward-to localhost:3000/api/webhooks/stripe
-stripe trigger checkout.session.completed
+```
 
-Objetivo Técnico
+Copie o `whsec_...` exibido para `STRIPE_WEBHOOK_SECRET_KEY` no `.env`. No checkout, use o cartão de teste `4242 4242 4242 4242`, com qualquer data futura e qualquer CVC.
 
-O projeto aplica conceitos de componentização, tipagem estática, rotas dinâmicas e integração com APIs REST, utilizando boas práticas de clean code, UI/UX e responsividade, com foco na experiência do usuário e eficiência operacional para restaurantes.
+## Autor
 
-Contribuição
-
-O projeto foi desenvolvido como parte de um estudo prático em desenvolvimento web e integração com sistemas de pagamento.
-Para sugestões ou melhorias, entre em contato com o desenvolvedor.
-
-Suporte
-
-Para dúvidas ou suporte técnico, entre em contato com:
-
-Jonathan Carvalho
-GitHub
-
+Jonathan Carvalho, [GitHub](https://github.com/Dot010)
