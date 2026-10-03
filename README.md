@@ -26,6 +26,13 @@ O seed cria a **Tigela**, uma loja de açaí fictícia com açaís, bowls, smoot
 - Pagamento com Pix, cartão ou boleto pelo Stripe Checkout
 - Status do pedido atualizado pelo webhook do Stripe, inclusive para pagamentos assíncronos (Pix e boleto)
 - Consulta de pedidos pelo CPF, guardado em cookie e nunca na URL
+- Status do pedido atualizado sozinho enquanto ele está em andamento, com aviso quando fica pronto
+- Modo totem: abra qualquer página com `?totem=1` no aparelho do balcão. Depois de 60 s sem uso ele pergunta "Ainda está aí?" e, sem resposta, limpa a sacola e o CPF e volta ao início (`?totem=0` desliga)
+
+### Telão de senhas (`/tigela/telao`)
+
+- Números em preparo e prontos para retirar, para uma TV no balcão
+- Destaque e aviso sonoro (após um toque em "Ativar som") quando um pedido fica pronto
 
 ### Painel do restaurante (`/tigela/admin`)
 
@@ -41,6 +48,7 @@ O seed cria a **Tigela**, uma loja de açaí fictícia com açaís, bowls, smoot
 - **Opções validadas no servidor.** Tamanho e complementos são conferidos contra os grupos do produto (mínimo, máximo e se a opção pertence ao produto), e o preço é recalculado pelo banco. O pedido guarda uma cópia das opções escolhidas.
 - **Autenticação sem dependências pesadas.** Senhas com `scrypt` do próprio Node e sessão em JWT assinado com `jose`. O middleware protege as páginas do painel e cada server action confere a sessão de novo, porque actions podem ser chamadas diretamente.
 - **Horário local do restaurante.** "Hoje", "aberto agora" e os horários de pedidos usam o fuso de São Paulo, independente do fuso do servidor.
+- **Atualização por consulta periódica.** Pedidos, painel e telão recarregam os dados a cada poucos segundos (`router.refresh()`), só enquanto a aba está visível e, para o cliente, só enquanto há pedido em andamento. Em hospedagem serverless (Vercel) conexões longas como WebSocket não ficam abertas, então consultar periodicamente é o caminho mais confiável.
 - **Webhook idempotente.** Só pedidos pendentes mudam de status, então eventos repetidos do Stripe não causam efeitos duplicados.
 
 ## Estrutura
