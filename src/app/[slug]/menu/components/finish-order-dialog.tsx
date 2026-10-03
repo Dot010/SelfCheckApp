@@ -8,6 +8,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { PatternFormat } from "react-number-format";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -52,8 +53,6 @@ const formSchema = z.object({
 });
 
 type FormSchema = z.infer<typeof formSchema>;
-// Server Actions
-//  - Funcões que são executadas no servidor, mas podem ser chamadas de client components
 
 interface FinishOrderDialogProps {
   open: boolean;
@@ -80,16 +79,20 @@ const FinishOrderDialog = ({ open, onOpenChange }: FinishOrderDialogProps) => {
         "consumptionMethod",
       ) as ConsumptionMethod;
 
-      const order = await createOrder({
+      const result = await createOrder({
         consumptionMethod,
         customerCpf: data.cpf,
         customerName: data.name,
         products,
         slug,
       });
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
+      }
       const { sessionId } = await createStripeCheckout({
         products,
-        orderId: order.id,
+        orderId: result.orderId,
         slug,
         consumptionMethod,
         cpf: data.cpf,
