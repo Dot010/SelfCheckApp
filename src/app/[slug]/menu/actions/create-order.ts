@@ -76,6 +76,9 @@ export const createOrder = async (
         error: "Alguns itens da sacola não estão mais disponíveis.",
       };
     }
+    if (!product.isAvailable) {
+      return { ok: false, error: `${product.name} esgotou. Remova da sacola.` };
+    }
     const selection = resolveSelectedOptions(
       product.optionGroups,
       item.optionIds,

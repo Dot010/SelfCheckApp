@@ -211,10 +211,12 @@ const ProductDetails = ({
         <Button
           size="lg"
           className="h-12 flex-1 rounded-full text-base"
-          disabled={!selection.ok}
+          disabled={!selection.ok || !product.isAvailable}
           onClick={handleAddToCart}
         >
-          Adicionar · {formatCurrency(unitPrice * quantity)}
+          {product.isAvailable
+            ? `Adicionar · ${formatCurrency(unitPrice * quantity)}`
+            : "Esgotado no momento"}
         </Button>
       </div>
     </div>
