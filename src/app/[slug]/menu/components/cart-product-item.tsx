@@ -5,21 +5,26 @@ import { useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/helpers/format-currency";
 
-import { CartContext, CartProduct } from "../contexts/cart";
+import { CartContext, CartItem } from "../contexts/cart";
 
-interface CartItemProps {
-  product: CartProduct;
+interface CartProductItemProps {
+  item: CartItem;
 }
 
-const CartProductItem = ({ product }: CartItemProps) => {
-  const { decreaseProductQuantity, increaseProductQuantity } =
-    useContext(CartContext);
+const CartProductItem = ({ item }: CartProductItemProps) => {
+  const { decreaseQuantity, increaseQuantity } = useContext(CartContext);
+  const details = [
+    item.options.map((option) => option.name).join(", "),
+    item.notes && `"${item.notes}"`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <div className="flex items-center gap-3 py-3">
       <div className="relative h-14 w-14 shrink-0 rounded-2xl bg-secondary">
         <Image
-          src={product.imageUrl}
+          src={item.imageUrl}
           alt=""
           fill
           sizes="56px"
@@ -27,9 +32,14 @@ const CartProductItem = ({ product }: CartItemProps) => {
         />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">{product.name}</p>
+        <p className="truncate text-sm font-medium">{item.name}</p>
+        {details && (
+          <p className="line-clamp-2 text-xs text-muted-foreground">
+            {details}
+          </p>
+        )}
         <p className="text-sm font-semibold">
-          {formatCurrency(product.price * product.quantity)}
+          {formatCurrency(item.unitPrice * item.quantity)}
         </p>
       </div>
       <div className="flex items-center gap-1">
@@ -38,22 +48,22 @@ const CartProductItem = ({ product }: CartItemProps) => {
           size="icon"
           className="h-8 w-8 rounded-xl"
           aria-label={
-            product.quantity === 1
-              ? `Remover ${product.name}`
-              : `Diminuir ${product.name}`
+            item.quantity === 1
+              ? `Remover ${item.name}`
+              : `Diminuir ${item.name}`
           }
-          onClick={() => decreaseProductQuantity(product.id)}
+          onClick={() => decreaseQuantity(item.key)}
         >
-          {product.quantity === 1 ? <Trash2Icon /> : <MinusIcon />}
+          {item.quantity === 1 ? <Trash2Icon /> : <MinusIcon />}
         </Button>
         <span className="w-6 text-center text-sm font-semibold">
-          {product.quantity}
+          {item.quantity}
         </span>
         <Button
           size="icon"
           className="h-8 w-8 rounded-xl"
-          aria-label={`Aumentar ${product.name}`}
-          onClick={() => increaseProductQuantity(product.id)}
+          aria-label={`Aumentar ${item.name}`}
+          onClick={() => increaseQuantity(item.key)}
         >
           <PlusIcon />
         </Button>

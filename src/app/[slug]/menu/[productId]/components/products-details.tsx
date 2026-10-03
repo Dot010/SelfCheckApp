@@ -9,6 +9,10 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/helpers/format-currency";
+import {
+  defaultOptionIds,
+  resolveSelectedOptions,
+} from "@/helpers/product-options";
 
 import { CartContext } from "../../contexts/cart";
 
@@ -23,18 +27,36 @@ interface ProductDetailsProps {
           avatarImageUrl: true;
         };
       };
+      optionGroups: { include: { options: true } };
     };
   }>;
   menuUrl: string;
 }
 
 const ProductDetails = ({ product, menuUrl }: ProductDetailsProps) => {
-  const { addProduct } = useContext(CartContext);
+  const { addItem } = useContext(CartContext);
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
 
+  const selection = resolveSelectedOptions(
+    product.optionGroups,
+    defaultOptionIds(product.optionGroups),
+  );
+  const unitPrice = product.price + (selection.ok ? selection.extraPrice : 0);
+
   const handleAddToCart = () => {
-    addProduct({ ...product, quantity });
+    if (!selection.ok) {
+      toast.error(selection.error);
+      return;
+    }
+    addItem({
+      productId: product.id,
+      name: product.name,
+      imageUrl: product.imageUrl,
+      unitPrice,
+      quantity,
+      options: selection.options.map(({ id, name }) => ({ id, name })),
+    });
     toast.success(`${product.name} na sacola`);
     router.push(menuUrl);
   };
@@ -53,9 +75,7 @@ const ProductDetails = ({ product, menuUrl }: ProductDetailsProps) => {
           {product.restaurant.name}
         </div>
         <h1 className="text-3xl font-extrabold sm:text-4xl">{product.name}</h1>
-        <p className="text-2xl font-semibold">
-          {formatCurrency(product.price)}
-        </p>
+        <p className="text-2xl font-semibold">{formatCurrency(unitPrice)}</p>
       </div>
 
       <section className="space-y-2">
@@ -113,7 +133,7 @@ const ProductDetails = ({ product, menuUrl }: ProductDetailsProps) => {
           className="h-12 flex-1 rounded-full text-base"
           onClick={handleAddToCart}
         >
-          Adicionar · {formatCurrency(product.price * quantity)}
+          Adicionar · {formatCurrency(unitPrice * quantity)}
         </Button>
       </div>
     </div>

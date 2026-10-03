@@ -44,8 +44,7 @@ const RestaurantCategories = ({
     restaurant.menuCategories.find((c) => c.id === selectedCategoryId) ??
     restaurant.menuCategories[0];
 
-  const { products, total, totalQuantity, toggleCart } =
-    useContext(CartContext);
+  const { items, total, totalQuantity, toggleCart } = useContext(CartContext);
 
   return (
     <div className="mx-auto mt-6 max-w-6xl px-4 lg:grid lg:grid-cols-[180px_minmax(0,1fr)_320px] lg:items-start lg:gap-8 lg:px-6">
@@ -91,7 +90,7 @@ const RestaurantCategories = ({
       </aside>
 
       {/* Phones and tablets: floating bar that opens the cart as a sheet */}
-      {products.length > 0 && (
+      {items.length > 0 && (
         <div className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 mx-auto flex max-w-xl items-center justify-between gap-3 rounded-full bg-foreground py-2 pl-6 pr-2 text-background shadow-lg lg:hidden">
           <div>
             <p className="text-xs opacity-75">

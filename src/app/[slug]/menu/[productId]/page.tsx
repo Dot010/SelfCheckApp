@@ -27,6 +27,10 @@ const ProductPage = async ({ params, searchParams }: ProductPageProps) => {
           slug: true,
         },
       },
+      optionGroups: {
+        orderBy: { position: "asc" },
+        include: { options: { orderBy: { position: "asc" } } },
+      },
     },
   });
   if (!product || product.restaurant.slug !== slug) {

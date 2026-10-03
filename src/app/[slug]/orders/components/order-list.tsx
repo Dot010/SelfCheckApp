@@ -24,6 +24,7 @@ interface OrderListProps {
         orderProducts: {
           include: {
             product: { select: { name: true } };
+            options: { select: { id: true; name: true } };
           };
         };
       };
@@ -138,7 +139,22 @@ const OrderList = ({ slug, orders }: OrderListProps) => {
                       <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-secondary px-1.5 text-xs font-semibold">
                         {orderProduct.quantity}
                       </span>
-                      {orderProduct.product.name}
+                      <span className="min-w-0">
+                        {orderProduct.product.name}
+                        {(orderProduct.options.length > 0 ||
+                          orderProduct.notes) && (
+                          <span className="block text-xs text-muted-foreground">
+                            {[
+                              orderProduct.options
+                                .map((o) => o.name)
+                                .join(", "),
+                              orderProduct.notes && `"${orderProduct.notes}"`,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </span>
+                        )}
+                      </span>
                     </li>
                   ))}
                 </ul>

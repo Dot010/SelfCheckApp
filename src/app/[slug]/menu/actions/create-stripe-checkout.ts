@@ -33,6 +33,18 @@ const toStripeImage = (imageUrl: string, origin: string) => {
   }
 };
 
+// e.g. "500 ml, Granola, Banana · Obs.: granola à parte"
+const describeItem = (item: {
+  options: { name: string }[];
+  notes: string | null;
+}) =>
+  [
+    item.options.map((option) => option.name).join(", "),
+    item.notes && `Obs.: ${item.notes}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
 export const createStripeCheckout = async (
   orderId: number,
 ): Promise<CreateStripeCheckoutResult> => {
@@ -41,7 +53,10 @@ export const createStripeCheckout = async (
     include: {
       restaurant: { select: { slug: true } },
       orderProducts: {
-        include: { product: { select: { name: true, imageUrl: true } } },
+        include: {
+          product: { select: { name: true, imageUrl: true } },
+          options: { select: { name: true } },
+        },
       },
     },
   });
@@ -77,6 +92,8 @@ export const createStripeCheckout = async (
           unit_amount: orderProduct.price,
           product_data: {
             name: orderProduct.product.name,
+            // Stripe rejects an empty description, so leave it out instead.
+            description: describeItem(orderProduct) || undefined,
             images: toStripeImage(orderProduct.product.imageUrl, origin),
           },
         },
