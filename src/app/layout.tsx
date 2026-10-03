@@ -17,7 +17,7 @@ const bricolage = Bricolage_Grotesque({
 });
 
 export const metadata: Metadata = {
-  title: "SelfCheck",
+  title: { default: "SelfCheck", template: "%s | SelfCheck" },
   description:
     "Autoatendimento para restaurantes: cardápio digital, pagamento online e acompanhamento do pedido.",
 };
