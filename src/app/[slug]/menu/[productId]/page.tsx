@@ -1,12 +1,11 @@
 import { ChevronLeftIcon, ScrollTextIcon } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { db } from "@/lib/prisma";
 
-import ProductDetails from "./components/products-details";
+import ProductView from "./components/product-view";
 
 interface ProductPageProps {
   params: Promise<{ slug: string; productId: string }>;
@@ -62,19 +61,7 @@ const ProductPage = async ({ params, searchParams }: ProductPageProps) => {
         </Button>
       </div>
 
-      <div className="mt-4 grid items-start gap-6 lg:mt-6 lg:grid-cols-2 lg:gap-12">
-        <div className="relative mx-auto aspect-square w-full max-w-md rounded-[2rem] bg-secondary lg:sticky lg:top-6 lg:max-w-none">
-          <Image
-            src={product.imageUrl}
-            alt={product.name}
-            fill
-            priority
-            sizes="(min-width: 1024px) 560px, 90vw"
-            className="object-contain p-6 lg:p-10"
-          />
-        </div>
-        <ProductDetails product={product} menuUrl={menuUrl} />
-      </div>
+      <ProductView product={product} menuUrl={menuUrl} />
     </main>
   );
 };
