@@ -82,7 +82,8 @@ export const createStripeCheckout = async (
   try {
     session = await getStripe().checkout.sessions.create({
       mode: "payment",
-      payment_method_types: ["card", "boleto"],
+      // No payment_method_types: Stripe shows the methods enabled in the
+      // dashboard (card, Pix, boleto...), so turning Pix on needs no deploy.
       metadata,
       payment_intent_data: { metadata },
       line_items: order.orderProducts.map((orderProduct) => ({
