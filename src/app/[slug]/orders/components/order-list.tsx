@@ -32,7 +32,7 @@ interface OrderListProps {
 
 const getStatusLabel = (status: OrderStatus) => {
   if (status === `FINISHED`) return `Concluído`;
-  if (status === `iN_PREPARATION`) return `Em Preparo`;
+  if (status === `IN_PREPARATION`) return `Em Preparo`;
   if (status === `PENDING`) return `Pendente`;
   if (status === `PAYMENT_CONFIRMED`) return `Pagamento Confirmado`;
   if (status === "PAYMENT_FAILED") return "Pagamento Falhou";

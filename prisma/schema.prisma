@@ -84,11 +84,11 @@ enum OrderStatus {
   PENDING
   PAYMENT_CONFIRMED
   PAYMENT_FAILED
-  iN_PREPARATION
+  IN_PREPARATION
   FINISHED
 }
 
 enum ConsumptionMethod {
-  TAKEWAY
+  TAKEAWAY
   DINE_IN
 }
