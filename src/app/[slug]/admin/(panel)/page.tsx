@@ -1,9 +1,9 @@
+import AutoRefresh from "@/components/auto-refresh";
 import { formatCurrency } from "@/helpers/format-currency";
 import { startOfToday } from "@/helpers/restaurant-time";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 
-import AutoRefresh from "../components/auto-refresh";
 import OrderBoard from "../components/order-board";
 
 interface AdminOrdersPageProps {
