@@ -1,17 +1,18 @@
 "use client";
 
 import { Prisma } from "@prisma/client";
-import { ChefHatIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { MinusIcon, PlusIcon } from "lucide-react";
 import Image from "next/image";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatCurrency } from "@/helpers/format-currency";
 
 import { CartContext } from "../../contexts/cart";
+
+const MAX_QUANTITY = 20;
 
 interface ProductDetailsProps {
   product: Prisma.ProductGetPayload<{
@@ -24,112 +25,98 @@ interface ProductDetailsProps {
       };
     };
   }>;
+  menuUrl: string;
 }
 
-const ProductDetails = ({ product }: ProductDetailsProps) => {
+const ProductDetails = ({ product, menuUrl }: ProductDetailsProps) => {
   const { addProduct } = useContext(CartContext);
-  const { slug } = useParams<{ slug: string }>();
-  const searchParams = useSearchParams();
   const router = useRouter();
+  const [quantity, setQuantity] = useState(1);
 
-  const [quantity, setQuantity] = useState<number>(1);
-  const handleDecreaseQuantity = () => {
-    setQuantity((prev) => {
-      if (prev == 1) {
-        return 1;
-      }
-      return prev - 1;
-    });
-  };
-  const handleIncreaseQuantity = () => {
-    setQuantity((prev) => prev + 1);
-  };
   const handleAddToCart = () => {
-    addProduct({
-      ...product,
-      quantity,
-    });
+    addProduct({ ...product, quantity });
     toast.success(`${product.name} na sacola`);
-    router.push(
-      `/${slug}/menu?consumptionMethod=${searchParams.get("consumptionMethod")}`,
-    );
+    router.push(menuUrl);
   };
 
   return (
-    <>
-      <div className="relative z-50 mt-[-1.5rem] flex flex-auto flex-col overflow-hidden rounded-t-3xl p-5">
-        <div className="flex-auto overflow-hidden">
-          {/* Restaurante */}
-          <div className="flex items-center gap-1.5">
-            <Image
-              src={product.restaurant.avatarImageUrl}
-              alt={product.restaurant.name}
-              width={16}
-              height={16}
-              className="rounded-full"
-            />
-            <p className="text-xs text-muted-foreground">
-              {product.restaurant.name}
-            </p>
-          </div>
-          {/* Nome do produto */}
-          <h2 className="mt-1 text-xl font-semibold">{product.name}</h2>
-
-          {/* Preço e quantidade */}
-
-          <div className="mt-3 flex items-center justify-between">
-            <h3 className="text-xl font-semibold">
-              {formatCurrency(product.price)}
-            </h3>
-
-            <div className="flex items-center gap-3 text-center">
-              <Button
-                variant="outline"
-                className="h-8 w-8 rounded-xl"
-                onClick={handleDecreaseQuantity}
-              >
-                <ChevronLeftIcon />
-              </Button>
-              <p className="w-4">{quantity}</p>
-              <Button
-                className="h-8 w-8 rounded-xl"
-                onClick={handleIncreaseQuantity}
-              >
-                <ChevronRightIcon />
-              </Button>
-            </div>
-          </div>
-
-          <ScrollArea className="h-full">
-            {/* Sobre */}
-
-            <div className="mt-6 space-y-3">
-              <h4 className="font-semibold">Sobre</h4>
-              <p className="text-sm text-muted-foreground">
-                {product.description}
-              </p>
-            </div>
-
-            {/* Ingredientes */}
-            <div className="mt-6 space-y-3">
-              <div className="flex items-center gap-1.5">
-                <ChefHatIcon size={18} />
-                <h4 className="font-semibold">Ingredientes</h4>
-              </div>
-              <ul className="list-disc px-5 text-sm text-muted-foreground">
-                {product.ingredients.map((ingredient) => (
-                  <li key={ingredient}>{ingredient}</li>
-                ))}
-              </ul>
-            </div>
-          </ScrollArea>
+    <div className="flex flex-col gap-6">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Image
+            src={product.restaurant.avatarImageUrl}
+            alt=""
+            width={20}
+            height={20}
+            className="rounded-md"
+          />
+          {product.restaurant.name}
         </div>
-        <Button className="mt-5 w-full rounded-full" onClick={handleAddToCart}>
-          {" "}
-          Adicionar ao carrinho
+        <h1 className="text-3xl font-extrabold sm:text-4xl">{product.name}</h1>
+        <p className="text-2xl font-semibold">
+          {formatCurrency(product.price)}
+        </p>
+      </div>
+
+      <section className="space-y-2">
+        <h2 className="text-lg font-bold">Sobre</h2>
+        <p className="leading-relaxed text-muted-foreground">
+          {product.description}
+        </p>
+      </section>
+
+      {product.ingredients.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold">Ingredientes</h2>
+          <ul className="flex flex-wrap gap-2">
+            {product.ingredients.map((ingredient) => (
+              <li
+                key={ingredient}
+                className="rounded-full bg-secondary px-3 py-1.5 text-sm"
+              >
+                {ingredient}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Fixed to the bottom on phones, inline on desktop */}
+      <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t bg-card px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:static lg:border-0 lg:bg-transparent lg:p-0">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-11 w-11 rounded-xl"
+            aria-label="Diminuir quantidade"
+            disabled={quantity === 1}
+            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+          >
+            <MinusIcon />
+          </Button>
+          <span className="w-6 text-center text-lg font-semibold">
+            {quantity}
+          </span>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-11 w-11 rounded-xl"
+            aria-label="Aumentar quantidade"
+            disabled={quantity === MAX_QUANTITY}
+            onClick={() => setQuantity((q) => Math.min(MAX_QUANTITY, q + 1))}
+          >
+            <PlusIcon />
+          </Button>
+        </div>
+        <Button
+          size="lg"
+          className="h-12 flex-1 rounded-full text-base"
+          onClick={handleAddToCart}
+        >
+          Adicionar · {formatCurrency(product.price * quantity)}
         </Button>
       </div>
-    </>
+    </div>
   );
 };
 
