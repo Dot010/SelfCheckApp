@@ -1,4 +1,10 @@
+import { existsSync } from "node:fs";
+
 import { defineConfig, devices } from "@playwright/test";
+
+// Reads .env (when there is one) so the tests sign webhooks with the same
+// secret as the app. Variables already set in the shell win.
+if (existsSync(".env")) process.loadEnvFile(".env");
 
 // End-to-end tests run against a real server and database. Locally, start the
 // app first (`npm run build && npm start`) or let Playwright do it. In CI the

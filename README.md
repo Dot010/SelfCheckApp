@@ -133,7 +133,7 @@ npm test            # testes unitários (Vitest)
 npm run test:e2e    # testes ponta a ponta (Playwright)
 ```
 
-Os testes ponta a ponta usam o banco do `.env`, então rode-os num banco de desenvolvimento com o seed aplicado, nunca no de produção (eles deixam a loja aberta o dia todo; rode o seed de novo para voltar ao horário padrão). Na primeira vez, instale o navegador com `npx playwright install chromium`. O Playwright sobe o app com `npm start` (faça `npm run build` antes) ou reaproveita um servidor que já esteja rodando na porta 3000. O Stripe não é chamado de verdade: o pagamento é confirmado por um webhook assinado com o mesmo `STRIPE_WEBHOOK_SECRET_KEY` do servidor, que precisa estar definido no terminal onde os testes rodam.
+Os testes ponta a ponta usam o banco do `.env`, então rode-os num banco de desenvolvimento com o seed aplicado, nunca no de produção (eles deixam a loja aberta o dia todo; rode o seed de novo para voltar ao horário padrão). Na primeira vez, instale o navegador com `npx playwright install chromium`. O Playwright sobe o app com `npm start` (faça `npm run build` antes) ou reaproveita um servidor que já esteja rodando na porta 3000. O Stripe não é chamado de verdade: o pagamento é confirmado por um webhook assinado com o `STRIPE_WEBHOOK_SECRET_KEY` lido do `.env`, o mesmo que o app usa.
 
 A cada push e pull request, o GitHub Actions roda lint, tipos, formatação, testes unitários e build, e em paralelo os testes ponta a ponta com um PostgreSQL próprio.
 
