@@ -1,23 +1,22 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { db } from "@/lib/prisma";
+import { getRestaurantBySlug } from "@/data/get-restaurant-by-slug";
 
 import ConsumptionMethodOption from "./components/consumption-method-option";
 
 interface RestaurantPageProps {
-    params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>;
 }
 
 const RestaurantPage = async ({ params }: RestaurantPageProps) => {
-    const { slug } = await params;
-    const restaurant = await db.restaurant.findUnique({ where: { slug } });
-    if (!restaurant) {
-        return notFound();
-    }
+  const { slug } = await params;
+  const restaurant = await getRestaurantBySlug(slug);
+  if (!restaurant) {
+    return notFound();
+  }
 
-  
-       return (
+  return (
     <div className="flex h-screen flex-col items-center justify-center px-6 pt-24">
       {/* LOGO E TITULO */}
       <div className="flex flex-col items-center gap-2">
@@ -47,7 +46,7 @@ const RestaurantPage = async ({ params }: RestaurantPageProps) => {
         />
         <ConsumptionMethodOption
           slug={slug}
-         option="TAKEWAY"
+          option="TAKEAWAY"
           buttonText="Para levar"
           imageAlt="Para levar"
           imageUrl="/take_away.png"
@@ -58,9 +57,3 @@ const RestaurantPage = async ({ params }: RestaurantPageProps) => {
 };
 
 export default RestaurantPage;
-
-// srver components - renderizados no servidor
-// podem ser async
-// podem chamar recursos do backend (banco de dados)
-// nao pode usar hooks (useEffect, useState)
-//bottom com Onclick (interatividade)
