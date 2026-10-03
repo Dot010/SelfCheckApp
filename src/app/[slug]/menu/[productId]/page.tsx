@@ -10,12 +10,12 @@ import ProductDetails from "./components/products-details";
 
 interface ProductPageProps {
   params: Promise<{ slug: string; productId: string }>;
-  searchParams: Promise<{ consumptionMethod?: string }>;
+  searchParams: Promise<{ consumptionMethod?: string; category?: string }>;
 }
 
 const ProductPage = async ({ params, searchParams }: ProductPageProps) => {
   const { slug, productId } = await params;
-  const { consumptionMethod } = await searchParams;
+  const { consumptionMethod = "", category } = await searchParams;
 
   const product = await db.product.findUnique({
     where: { id: productId },
@@ -33,7 +33,9 @@ const ProductPage = async ({ params, searchParams }: ProductPageProps) => {
     return notFound();
   }
 
-  const menuUrl = `/${slug}/menu?consumptionMethod=${consumptionMethod ?? ""}`;
+  const menuQuery = new URLSearchParams({ consumptionMethod });
+  if (category) menuQuery.set("category", category);
+  const menuUrl = `/${slug}/menu?${menuQuery}`;
 
   return (
     <main className="mx-auto max-w-6xl px-4 pb-32 pt-4 lg:px-6 lg:pb-12 lg:pt-6">

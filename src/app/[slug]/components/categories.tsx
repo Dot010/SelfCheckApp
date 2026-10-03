@@ -1,6 +1,7 @@
 "use client";
 
 import { ConsumptionMethod, Prisma } from "@prisma/client";
+import { useSearchParams } from "next/navigation";
 import { useContext, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -27,9 +28,18 @@ const RestaurantCategories = ({
   restaurant,
   consumptionMethod,
 }: RestaurantCategoriesProps) => {
+  // The selected category lives in the URL too, so coming back from a
+  // product page (or reloading) keeps the customer where they were.
+  const searchParams = useSearchParams();
   const [selectedCategoryId, setSelectedCategoryId] = useState(
-    restaurant.menuCategories[0]?.id,
+    searchParams.get("category") ?? restaurant.menuCategories[0]?.id,
   );
+  const selectCategory = (categoryId: string) => {
+    setSelectedCategoryId(categoryId);
+    const params = new URLSearchParams(searchParams);
+    params.set("category", categoryId);
+    window.history.replaceState(null, "", `?${params}`);
+  };
   const selectedCategory =
     restaurant.menuCategories.find((c) => c.id === selectedCategoryId) ??
     restaurant.menuCategories[0];
@@ -51,7 +61,7 @@ const RestaurantCategories = ({
               key={category.id}
               type="button"
               aria-pressed={isSelected}
-              onClick={() => setSelectedCategoryId(category.id)}
+              onClick={() => selectCategory(category.id)}
               className={cn(
                 "shrink-0 rounded-full px-4 py-2.5 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 isSelected
@@ -70,6 +80,7 @@ const RestaurantCategories = ({
         <Products
           slug={restaurant.slug}
           consumptionMethod={consumptionMethod}
+          categoryId={selectedCategory?.id}
           products={selectedCategory?.products ?? []}
         />
       </section>

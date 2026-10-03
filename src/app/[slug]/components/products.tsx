@@ -8,16 +8,24 @@ import { formatCurrency } from "@/helpers/format-currency";
 interface ProductsProps {
   slug: string;
   consumptionMethod: ConsumptionMethod;
+  categoryId?: string;
   products: Product[];
 }
 
-const Products = ({ slug, consumptionMethod, products }: ProductsProps) => {
+const Products = ({
+  slug,
+  consumptionMethod,
+  categoryId,
+  products,
+}: ProductsProps) => {
+  const query = new URLSearchParams({ consumptionMethod });
+  if (categoryId) query.set("category", categoryId);
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
       {products.map((product) => (
         <Link
           key={product.id}
-          href={`/${slug}/menu/${product.id}?consumptionMethod=${consumptionMethod}`}
+          href={`/${slug}/menu/${product.id}?${query}`}
           className="group flex flex-col overflow-hidden rounded-3xl bg-card shadow-sm ring-1 ring-border transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <div className="relative aspect-[5/4] bg-secondary">
