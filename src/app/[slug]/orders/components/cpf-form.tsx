@@ -101,7 +101,6 @@ const CpfForm = () => {
             <DrawerFooter>
               <Button
                 type="submit"
-                variant="destructive"
                 className="w-full rounded-full"
                 disabled={isPending}
               >

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 240" role="img" aria-label="Picolé de açaí com ninho"><title>Picolé de açaí com ninho</title>
+<ellipse cx="150" cy="226" rx="50" ry="8" fill="#2B1F33" opacity=".08"/>
+<rect x="140" y="160" width="20" height="66" rx="8" fill="#E2C38D"/>
+<rect x="106" y="22" width="88" height="150" rx="42" fill="#5B2A86"/>
+<path d="M106 100 Q 150 120 194 100 L 194 130 Q 194 172 150 172 Q 106 172 106 130 Z" fill="#F3E6C8"/>
+<rect x="122" y="40" width="12" height="70" rx="6" fill="#FFFFFF" opacity=".18"/></svg>

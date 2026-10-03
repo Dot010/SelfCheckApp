@@ -20,6 +20,19 @@ const getOrigin = async () => {
   return `${protocol}://${host}`;
 };
 
+// Stripe downloads product images itself, so it needs a public https URL to a
+// raster image. Relative paths, localhost and SVGs are left out.
+const toStripeImage = (imageUrl: string, origin: string) => {
+  try {
+    const url = new URL(imageUrl, origin);
+    const isPublic =
+      url.protocol === "https:" && !/^(localhost|127\.)/.test(url.hostname);
+    return isPublic && !url.pathname.endsWith(".svg") ? [url.href] : [];
+  } catch {
+    return [];
+  }
+};
+
 export const createStripeCheckout = async (
   orderId: number,
 ): Promise<CreateStripeCheckoutResult> => {
@@ -64,7 +77,7 @@ export const createStripeCheckout = async (
           unit_amount: orderProduct.price,
           product_data: {
             name: orderProduct.product.name,
-            images: [orderProduct.product.imageUrl],
+            images: toStripeImage(orderProduct.product.imageUrl, origin),
           },
         },
       })),

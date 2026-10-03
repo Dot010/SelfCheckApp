@@ -42,7 +42,7 @@ const RestaurantCategories = ({ restaurant }: RestaurantCategoriesProps) => {
   };
 
   return (
-    <div className="relative z-50 mt-[-1.5rem] rounded-3xl bg-white">
+    <div className="relative z-50 mt-[-1.5rem] rounded-3xl bg-card">
       <div className="p-5">
         <div className="flex items-center gap-3">
           <Image
@@ -57,7 +57,7 @@ const RestaurantCategories = ({ restaurant }: RestaurantCategoriesProps) => {
           </div>
         </div>
 
-        <div className="mt-3 flex items-center gap-1 text-xs text-green-500">
+        <div className="mt-3 flex items-center gap-1 text-xs font-medium text-success">
           <ClockIcon size={12} />
           <p>Aberto!</p>
         </div>
@@ -84,7 +84,7 @@ const RestaurantCategories = ({ restaurant }: RestaurantCategoriesProps) => {
 
       <Products products={selectedCategory.products} />
       {products.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 flex w-full items-center justify-between border-t bg-white px-5 py-3">
+        <div className="fixed bottom-0 left-0 right-0 flex w-full items-center justify-between border-t bg-card px-5 py-3">
           <div>
             <p className="text-xs text-muted-foreground">Total dos Pedidos</p>
             <p className="text-sm font-semibold">

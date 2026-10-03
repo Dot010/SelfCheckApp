@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 240" role="img" aria-label="Smoothie de açaí com banana"><title>Smoothie de açaí com banana</title>
+<ellipse cx="150" cy="226" rx="70" ry="9" fill="#2B1F33" opacity=".08"/>
+<path d="M168 20 L 160 70" stroke="#B8E04A" stroke-width="10" stroke-linecap="round"/>
+<path d="M100 66 Q 150 40 200 66 Z" fill="#F6E7A6" stroke="#E7DCEB" stroke-width="3"/>
+<path d="M98 70 L 202 70 L 188 220 L 112 220 Z" fill="#6B2F8F"/>
+<path d="M98 70 L 202 70 L 199 96 L 101 96 Z" fill="#FFFFFF" opacity=".35"/>
+<path d="M118 110 L 124 200" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity=".25"/>
+<rect x="96" y="64" width="108" height="10" rx="5" fill="#FFFFFF" stroke="#E7DCEB" stroke-width="2"/></svg>

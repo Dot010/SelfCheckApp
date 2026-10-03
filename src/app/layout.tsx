@@ -1,17 +1,23 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Bricolage_Grotesque, Poppins } from "next/font/google";
 
 import { Toaster } from "@/components/ui/sonner";
 
 const poppins = Poppins({
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-display",
 });
 
 export const metadata: Metadata = {
-  title: "SelfCheck",
+  title: { default: "SelfCheck", template: "%s | SelfCheck" },
   description:
     "Autoatendimento para restaurantes: cardápio digital, pagamento online e acompanhamento do pedido.",
 };
@@ -23,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${poppins.className} antialiased`}>
+      <body className={`${poppins.variable} ${bricolage.variable} antialiased`}>
         {children}
         <Toaster />
       </body>

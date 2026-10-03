@@ -13,6 +13,10 @@ Demo: https://self-check-app.vercel.app
 - Stripe Checkout e webhooks
 - Zod e React Hook Form para validação
 
+## Restaurante de demonstração
+
+O seed cria a **Tigela**, uma loja de açaí fictícia com açaís, bowls, smoothies e picolés. As ilustrações dos produtos, o logo e a capa são originais, feitos em SVG para este projeto, e ficam em `public/tigela`.
+
 ## Funcionalidades
 
 - Escolha entre comer no local ou levar
@@ -64,7 +68,9 @@ npx prisma db seed
 npm run dev
 ```
 
-Acesse http://localhost:3000.
+Acesse http://localhost:3000. A página inicial leva ao primeiro restaurante cadastrado.
+
+> O seed apaga os restaurantes existentes (e, em cascata, seus pedidos) antes de criar a Tigela.
 
 ### Testando pagamentos
 
