@@ -1,30 +1,29 @@
 "use client";
 
-import { OrderStatus, Prisma } from "@prisma/client";
-import { ChevronLeftIcon, ScrollTextIcon } from "lucide-react";
-import Image from "next/image";
+import { Prisma } from "@prisma/client";
+import { ChevronLeftIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "@/helpers/format-currency";
+import {
+  orderStatusDisplay,
+  orderSteps,
+  toneClassName,
+} from "@/helpers/order-status";
+import { cn } from "@/lib/utils";
 
 import { forgetCustomer } from "../actions/customer";
 
 interface OrderListProps {
+  slug: string;
   orders: Array<
     Prisma.OrderGetPayload<{
       include: {
-        restaurant: {
-          select: {
-            name: true;
-            avatarImageUrl: true;
-          };
-        };
         orderProducts: {
           include: {
-            product: true;
+            product: { select: { name: true } };
           };
         };
       };
@@ -32,37 +31,35 @@ interface OrderListProps {
   >;
 }
 
-const getStatusLabel = (status: OrderStatus) => {
-  if (status === `FINISHED`) return `Concluído`;
-  if (status === `IN_PREPARATION`) return `Em Preparo`;
-  if (status === `PENDING`) return `Pendente`;
-  if (status === `PAYMENT_CONFIRMED`) return `Pagamento Confirmado`;
-  if (status === "PAYMENT_FAILED") return "Pagamento Falhou";
-  return ``;
-};
+const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
+  day: "2-digit",
+  month: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+});
 
-const OrderList = ({ orders }: OrderListProps) => {
+const OrderList = ({ slug, orders }: OrderListProps) => {
   const router = useRouter();
-  const handleBackClick = () => router.back();
   const handleChangeCpf = async () => {
     await forgetCustomer();
     router.refresh();
   };
-  return (
-    <div className="space-y-6 p-6">
-      <Button
-        size="icon"
-        variant="secondary"
-        className="rounded-full"
-        onClick={handleBackClick}
-      >
-        <ChevronLeftIcon />
-      </Button>
 
-      <div className="flex items-center justify-between gap-3">
+  return (
+    <main className="mx-auto max-w-5xl px-4 py-6 lg:px-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <ScrollTextIcon />
-          <h2 className="text-lg font-semibold">Meus Pedidos</h2>
+          <Button
+            asChild
+            variant="secondary"
+            size="icon"
+            className="rounded-full"
+          >
+            <Link href={`/${slug}`} aria-label="Voltar ao início">
+              <ChevronLeftIcon />
+            </Link>
+          </Button>
+          <h1 className="text-3xl font-extrabold">Meus pedidos</h1>
         </div>
         <Button
           variant="outline"
@@ -73,54 +70,95 @@ const OrderList = ({ orders }: OrderListProps) => {
           Trocar CPF
         </Button>
       </div>
-      {orders.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          Nenhum pedido encontrado para este CPF.
-        </p>
-      )}
-      {orders.map((order) => (
-        <Card key={order.id} className="p-4">
-          <CardContent className="space-y-4 p-5">
-            <div
-              className={`w-fit rounded-full px-2 py-1 text-xs font-semibold text-white ${
-                order.status === OrderStatus.FINISHED
-                  ? "bg-success text-white"
-                  : "bg-muted text-muted-foreground"
-              } `}
-            >
-              {getStatusLabel(order.status)}
-            </div>
 
-            <div className="flex items-center gap-2">
-              <div className="relative h-5 w-5">
-                <Image
-                  src={order.restaurant.avatarImageUrl}
-                  alt={order.restaurant.name}
-                  className="rounded-sm"
-                  fill
-                />
-              </div>
-              <p className="text-sm font-semibold">{order.restaurant.name}</p>
-            </div>
-
-            <div className="space-y-2">
-              <Separator />
-              {order.orderProducts.map((orderProduct) => (
-                <div key={orderProduct.id} className="flex items-center gap-2">
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
-                    {orderProduct.quantity}
-                  </div>
-                  <p className="text-sm">{orderProduct.product.name}</p>
+      {orders.length === 0 ? (
+        <div className="mt-8 rounded-3xl bg-card p-8 text-center shadow-sm ring-1 ring-border">
+          <p className="font-medium">Nenhum pedido encontrado para este CPF.</p>
+          <Button asChild className="mt-4 rounded-full">
+            <Link href={`/${slug}`}>Fazer um pedido</Link>
+          </Button>
+        </div>
+      ) : (
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {orders.map((order) => {
+            const status = orderStatusDisplay[order.status];
+            return (
+              <article
+                key={order.id}
+                className="flex flex-col gap-4 rounded-3xl bg-card p-5 shadow-sm ring-1 ring-border"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span
+                    className={cn(
+                      "rounded-full px-3 py-1 text-xs font-semibold",
+                      toneClassName[status.tone],
+                    )}
+                  >
+                    {status.label}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Pedido #{order.id} ·{" "}
+                    {dateFormatter.format(new Date(order.createdAt))}
+                  </span>
                 </div>
-              ))}
-            </div>
-            <Separator />
 
-            <p className="text-sm font-medium">{formatCurrency(order.total)}</p>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+                {order.status !== "PAYMENT_FAILED" && (
+                  <ol
+                    className="grid grid-cols-3 gap-2"
+                    aria-label="Andamento do pedido"
+                  >
+                    {orderSteps.map((label, index) => {
+                      const done = index < status.step;
+                      return (
+                        <li
+                          key={label}
+                          className={cn(
+                            "flex flex-col gap-1.5 text-xs",
+                            done
+                              ? "font-medium text-foreground"
+                              : "text-muted-foreground",
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              "h-1.5 rounded-full",
+                              done ? "bg-primary" : "bg-muted",
+                            )}
+                          />
+                          {label}
+                        </li>
+                      );
+                    })}
+                  </ol>
+                )}
+
+                <ul className="flex flex-col gap-2 text-sm">
+                  {order.orderProducts.map((orderProduct) => (
+                    <li key={orderProduct.id} className="flex gap-2">
+                      <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-secondary px-1.5 text-xs font-semibold">
+                        {orderProduct.quantity}
+                      </span>
+                      {orderProduct.product.name}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-auto flex items-center justify-between border-t pt-3 text-sm">
+                  <span className="text-muted-foreground">
+                    {order.consumptionMethod === "DINE_IN"
+                      ? "Comer aqui"
+                      : "Para levar"}
+                  </span>
+                  <span className="font-semibold">
+                    {formatCurrency(order.total)}
+                  </span>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
+    </main>
   );
 };
 
