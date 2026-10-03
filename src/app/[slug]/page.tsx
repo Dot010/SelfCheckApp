@@ -17,42 +17,48 @@ const RestaurantPage = async ({ params }: RestaurantPageProps) => {
   }
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center px-6 pt-24">
-      {/* LOGO E TITULO */}
-      <div className="flex flex-col items-center gap-2">
-        <Image
-          src={restaurant.avatarImageUrl}
-          alt={restaurant.name}
-          width={82}
-          height={82}
-        />
-        <h2 className="font-semibold">{restaurant.name}</h2>
+    <main className="flex min-h-dvh items-center justify-center px-4 py-10">
+      <div className="flex w-full max-w-2xl flex-col items-center gap-8 text-center sm:gap-10">
+        <div className="flex flex-col items-center gap-3">
+          <Image
+            src={restaurant.avatarImageUrl}
+            alt=""
+            width={80}
+            height={80}
+            className="rounded-3xl"
+            priority
+          />
+          <p className="font-display text-lg font-bold">{restaurant.name}</p>
+        </div>
+
+        <div className="space-y-3">
+          <h1 className="text-4xl font-extrabold sm:text-5xl">
+            Seja bem-vindo!
+          </h1>
+          <p className="mx-auto max-w-md text-muted-foreground">
+            {restaurant.description}
+          </p>
+          <p className="font-medium">Como você prefere o seu pedido?</p>
+        </div>
+
+        <div className="grid w-full max-w-xl grid-cols-2 gap-3 sm:gap-5">
+          <ConsumptionMethodOption
+            slug={slug}
+            option="DINE_IN"
+            label="Comer aqui"
+            hint="Servimos na mesa"
+            imageUrl="/tigela/dine-in.svg"
+          />
+          <ConsumptionMethodOption
+            slug={slug}
+            option="TAKEAWAY"
+            label="Para levar"
+            hint="Embalagem com tampa"
+            imageUrl="/tigela/take-away.svg"
+          />
+        </div>
       </div>
-      {/* BEM VINDO */}
-      <div className="space-y-2 pt-24 text-center">
-        <h3 className="text-2xl font-semibold">Seja bem-vindo!</h3>
-        <p className="opacity-55">
-          Escolha como prefere aproveitar sua refeição. Estamos aqui para
-          oferecer praticidade e sabor em cada detalhe!
-        </p>
-      </div>
-      <div className="grid grid-cols-2 gap-4 pt-14">
-        <ConsumptionMethodOption
-          slug={slug}
-          option="DINE_IN"
-          buttonText="Para comer aqui"
-          imageAlt="Comer aqui"
-          imageUrl="/tigela/dine-in.svg"
-        />
-        <ConsumptionMethodOption
-          slug={slug}
-          option="TAKEAWAY"
-          buttonText="Para levar"
-          imageAlt="Para levar"
-          imageUrl="/tigela/take-away.svg"
-        />
-      </div>
-    </div>
+    </main>
   );
 };
 
