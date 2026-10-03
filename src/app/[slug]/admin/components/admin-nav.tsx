@@ -1,6 +1,6 @@
 "use client";
 
-import { ClipboardListIcon, UtensilsIcon } from "lucide-react";
+import { ClipboardListIcon, SettingsIcon, UtensilsIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -11,6 +11,11 @@ const AdminNav = ({ slug }: { slug: string }) => {
   const links = [
     { href: `/${slug}/admin`, label: "Pedidos", icon: ClipboardListIcon },
     { href: `/${slug}/admin/cardapio`, label: "Cardápio", icon: UtensilsIcon },
+    {
+      href: `/${slug}/admin/configuracoes`,
+      label: "Configurações",
+      icon: SettingsIcon,
+    },
   ];
 
   return (

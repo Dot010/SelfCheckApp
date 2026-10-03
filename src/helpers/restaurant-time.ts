@@ -45,3 +45,68 @@ export const localClock = (
     minutes: Number(p.hour) * 60 + Number(p.minute),
   };
 };
+
+export interface OpeningHoursLike {
+  weekday: number;
+  opensAt: string;
+  closesAt: string;
+}
+
+const toMinutes = (time: string) => {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+};
+
+const WEEKDAY_NAMES = [
+  "domingo",
+  "segunda",
+  "terça",
+  "quarta",
+  "quinta",
+  "sexta",
+  "sábado",
+];
+
+// Whether the restaurant is open now and a short label for customers, e.g.
+// "Aberto até 23:00" or "Abre amanhã às 09:00".
+export const getOpenStatus = (
+  hours: OpeningHoursLike[],
+  now = new Date(),
+  timeZone = RESTAURANT_TIME_ZONE,
+) => {
+  const { weekday, minutes } = localClock(now, timeZone);
+  const byDay = new Map(hours.map((h) => [h.weekday, h]));
+
+  // Still open from yesterday's shift that runs past midnight?
+  const yesterday = byDay.get((weekday + 6) % 7);
+  if (
+    yesterday &&
+    toMinutes(yesterday.closesAt) < toMinutes(yesterday.opensAt) &&
+    minutes < toMinutes(yesterday.closesAt)
+  ) {
+    return { isOpen: true, label: `Aberto até ${yesterday.closesAt}` };
+  }
+
+  const today = byDay.get(weekday);
+  if (today) {
+    const opens = toMinutes(today.opensAt);
+    const closes = toMinutes(today.closesAt);
+    const overnight = closes < opens;
+    if (minutes >= opens && (overnight || minutes < closes)) {
+      return { isOpen: true, label: `Aberto até ${today.closesAt}` };
+    }
+    if (minutes < opens) {
+      return { isOpen: false, label: `Abre hoje às ${today.opensAt}` };
+    }
+  }
+
+  for (let offset = 1; offset <= 7; offset++) {
+    const next = byDay.get((weekday + offset) % 7);
+    if (next) {
+      const day =
+        offset === 1 ? "amanhã" : WEEKDAY_NAMES[(weekday + offset) % 7];
+      return { isOpen: false, label: `Abre ${day} às ${next.opensAt}` };
+    }
+  }
+  return { isOpen: false, label: "Fechado" };
+};

@@ -22,11 +22,13 @@ interface RestaurantCategoriesProps {
     };
   }>;
   consumptionMethod: ConsumptionMethod;
+  orderingBlockedMessage: string | null;
 }
 
 const RestaurantCategories = ({
   restaurant,
   consumptionMethod,
+  orderingBlockedMessage,
 }: RestaurantCategoriesProps) => {
   // The selected category lives in the URL too, so coming back from a
   // product page (or reloading) keeps the customer where they were.
@@ -86,7 +88,7 @@ const RestaurantCategories = ({
 
       {/* Desktop: the cart stays beside the menu */}
       <aside className="hidden rounded-3xl bg-card p-5 shadow-sm ring-1 ring-border lg:sticky lg:top-6 lg:block">
-        <CartPanel />
+        <CartPanel blockedMessage={orderingBlockedMessage} />
       </aside>
 
       {/* Phones and tablets: floating bar that opens the cart as a sheet */}
@@ -106,7 +108,7 @@ const RestaurantCategories = ({
           </Button>
         </div>
       )}
-      <CartSheet />
+      <CartSheet blockedMessage={orderingBlockedMessage} />
     </div>
   );
 };
