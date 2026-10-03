@@ -1,9 +1,13 @@
+import { TvIcon } from "lucide-react";
+import Link from "next/link";
+
+import AutoRefresh from "@/components/auto-refresh";
+import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/helpers/format-currency";
 import { startOfToday } from "@/helpers/restaurant-time";
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 
-import AutoRefresh from "../components/auto-refresh";
 import OrderBoard from "../components/order-board";
 
 interface AdminOrdersPageProps {
@@ -83,6 +87,12 @@ const AdminOrdersPage = async ({ params }: AdminOrdersPageProps) => {
               ` ${waitingPayment} aguardando pagamento hoje.`}
           </p>
         </div>
+        <Button asChild variant="outline" className="rounded-full">
+          <Link href={`/${slug}/telao`} target="_blank">
+            <TvIcon />
+            Abrir telão
+          </Link>
+        </Button>
       </header>
 
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
